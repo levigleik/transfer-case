@@ -1,3 +1,5 @@
+import { Button } from "@heroui/button";
+
 export function TesComp() {
-	return <div>asao</div>;
+	return <Button>Test</Button>;
 }
