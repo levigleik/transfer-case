@@ -17,8 +17,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useSidebar } from "@/hooks/use-sidebar";
-import { useStore } from "@/hooks/useStore";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function TeamSwitcher({
 	teams,
@@ -30,9 +29,7 @@ export function TeamSwitcher({
 	}[];
 }) {
 	const [activeTeam, setActiveTeam] = React.useState(teams[0]);
-	const sidebar = useStore(useSidebar, (sidebarStore) => sidebarStore);
-	if (!sidebar) return null;
-	const { isMobile } = sidebar;
+	const isMobile = useIsMobile();
 
 	if (!activeTeam) {
 		return null;

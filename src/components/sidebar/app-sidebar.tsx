@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import type * as React from "react";
 
-import { NavMain } from "@/components/global/nav-main";
-import { NavProjects } from "@/components/global/nav-projects";
-import { TeamSwitcher } from "@/components/global/team-switcher";
+import { NavMain } from "@/components/sidebar/nav-main";
+import { NavProjects } from "@/components/sidebar/nav-projects";
+import { TeamSwitcher } from "@/components/sidebar/team-switcher";
 import {
 	Sidebar,
 	SidebarContent,
