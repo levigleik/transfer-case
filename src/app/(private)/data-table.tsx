@@ -93,7 +93,14 @@ export function DataTable<TData, TValue>({
 	});
 
 	return (
-		<Card className="rounded-[14px] border-0 p-0 gap-0 overflow-hidden shadow-custom! dark:bg-[#161616] dark:shadow-none! dark:border dark:border-[#262626] max-h-[calc(100dvh-var(--header-height))] md:max-h-[calc(100dvh-var(--header-height)-3rem)] min-[56rem]:max-h-[calc(100dvh-var(--header-height)-4rem)]">
+		<Card
+			className={cn(
+				"rounded-[14px] border-0 p-0 gap-0 overflow-hidden shadow-custom!",
+				"dark:bg-background dark:shadow-none! dark:border dark:border-[#262626]",
+				"max-h-[calc(100dvh-var(--header-height))] md:max-h-[calc(100dvh-var(--header-height)-3rem)]",
+				"min-[56rem]:max-h-[calc(100dvh-var(--header-height)-4rem)]",
+			)}
+		>
 			<div className="flex h-full border-b items-center py-4 justify-between gap-4 px-5">
 				<div className="flex items-center gap-2">
 					<InputGroup>
@@ -110,23 +117,54 @@ export function DataTable<TData, TValue>({
 				</div>
 			</div>
 
-			<Table>
-				<TableHeader>
+			<Table
+				className={cn(
+					"w-full caption-bottom text-sm relative grid border-separate",
+					"border-spacing-0 [&_td]:border-border [&_th]:border-border [&_th]:border-b",
+					"[&_tr:not(:last-child)_td]:border-b [&_tr]:border-none",
+				)}
+			>
+				<TableHeader className="bg-background/90 dark:bg-background/90 sticky top-0 z-10 rounded-t-xl backdrop-blur-xs">
 					{table.getHeaderGroups().map((headerGroup) => (
-						<TableRow key={headerGroup.id} className="hover:bg-transparent">
+						<TableRow
+							key={headerGroup.id}
+							className="hover:bg-transparent flex w-full"
+						>
 							{headerGroup.headers.map((header) => {
 								return (
 									<TableHead
 										key={header.id}
+										data-pinned={header.column.getIsPinned() || undefined}
+										data-last-col={
+											header.column.getIsPinned()
+												? table
+														.getState()
+														// biome-ignore lint/style/noNonNullAssertion: <explanation>
+														.columnPinning[header.column.getIsPinned()!]?.at(
+															-1,
+														) === header.column.id
+													? header.column.getIsPinned()
+													: undefined
+												: undefined
+										}
 										style={{ width: `${header.getSize()}px` }}
 										className={cn(
-											"h-11",
+											"text-foreground text-left align-middle font-medium whitespace-nowrap",
+											"[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] relative flex",
+											"items-center h-10 truncate px-3",
+											"[&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0",
+											"[&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0",
+											"[&[data-pinned=left][data-last-col=left]]:border-r",
+											"[&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0",
+											"[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90",
+											"data-pinned:backdrop-blur-xs dark:data-pinned:bg-background/90",
 											header.column.getIsPinned() === "right" &&
 												"sticky right-0 z-10",
 											header.column.id !== "id" &&
 												header.column.id !== "select" &&
 												header.column.getIsPinned() !== "right" &&
 												"grow",
+											!header.column.getIsPinned() && "relative",
 										)}
 									>
 										{header.isPlaceholder
@@ -141,22 +179,48 @@ export function DataTable<TData, TValue>({
 						</TableRow>
 					))}
 				</TableHeader>
-				<TableBody>
+				<TableBody className="grid">
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map((row) => (
 							<TableRow
 								key={row.id}
 								data-state={row.getIsSelected() && "selected"}
-								className="group/table"
+								className={cn(
+									"hover:bg-muted/40 data-[state=selected]:bg-muted",
+									"border-b transition-colors flex w-full group/table",
+								)}
 							>
 								{row.getVisibleCells().map((cell) => (
 									<TableCell
 										key={cell.id}
+										data-pinned={cell.column.getIsPinned() || undefined}
+										data-last-col={
+											cell.column.getIsPinned()
+												? table
+														.getState()
+														.columnPinning[cell.column.getIsPinned()!]?.at(
+															-1,
+														) === cell.column.id
+													? cell.column.getIsPinned()
+													: undefined
+												: undefined
+										}
 										className={cn(
 											"px-3",
+											"flex items-center [&[data-pinned=left][data-last-col=left]]:border-r",
+											"[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90",
+											"data-pinned:backdrop-blur-xs dark:data-pinned:bg-background/90",
 											cell.column.getIsPinned() === "right" &&
 												"sticky right-0 z-10",
+											cell.column.id !== "id" &&
+												cell.column.id !== "select" &&
+												cell.column.getIsPinned() !== "right" &&
+												"grow",
+											!cell.column.getIsPinned() && "relative",
 										)}
+										style={{
+											width: `${cell.column.getSize()}px`,
+										}}
 									>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>

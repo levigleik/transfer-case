@@ -59,38 +59,70 @@ export const columns: ColumnDef<Payment>[] = [
 		accessorKey: "id",
 		header: ({ column }) => {
 			return (
-				<Button
-					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					ID
-					<ChevronsUpDown className="size-3" />
-				</Button>
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						ID
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
 			);
 		},
 		size: 65,
 	},
 	{
 		accessorKey: "status",
-		header: "Status",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Status
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
 	},
 	{
 		accessorKey: "email",
 		header: ({ column }) => {
 			return (
-				<Button
-					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					Email
-					<ChevronsUpDown className="size-3" />
-				</Button>
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Email
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
 			);
 		},
 	},
 	{
 		accessorKey: "amount",
-		header: "Amount",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Amount
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
 		// cell: ({ row }) => {
 		// 	const amount = parseFloat(row.getValue("amount"));
 		// 	const formatted = new Intl.NumberFormat("en-US", {
@@ -104,15 +136,16 @@ export const columns: ColumnDef<Payment>[] = [
 	{
 		id: "actions",
 		size: 96,
+		enablePinning: true,
 		cell: ({ row }) => {
 			return (
-				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity duration-300 backdrop-blur-xs">
+				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity backdrop-blur-xs bg-background dark:bg-background/90 h-[calc(100%-2px)]">
 					<div className="flex items-center gap-2">
 						<Button variant="ghost" size="icon">
 							<Pencil />
 						</Button>
-						<Button variant="destructive" size="icon">
-							<Trash />
+						<Button variant="ghost" size="icon">
+							<Trash className="text-destructive" />
 						</Button>
 					</div>
 				</div>
