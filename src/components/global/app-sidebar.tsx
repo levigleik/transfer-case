@@ -20,9 +20,7 @@ import { TeamSwitcher } from "@/components/global/team-switcher";
 import {
 	Sidebar,
 	SidebarContent,
-	SidebarFooter,
 	SidebarHeader,
-	SidebarRail,
 } from "@/components/ui/sidebar";
 
 // This is sample data.
@@ -165,7 +163,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavMain items={data.navMain} />
 				<NavProjects projects={data.projects} />
 			</SidebarContent>
-			<SidebarRail />
 		</Sidebar>
 	);
 }

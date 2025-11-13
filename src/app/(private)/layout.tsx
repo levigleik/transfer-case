@@ -1,4 +1,4 @@
-"use client";
+import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/global/app-sidebar";
 import {
 	Breadcrumb,
@@ -13,9 +13,17 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const sidebarState = (await cookies()).get("sidebar_state")?.value;
+
+	const defaultOpen =
+		sidebarState === undefined ? true : sidebarState === "true";
 	return (
-		<SidebarProvider>
+		<SidebarProvider defaultOpen={defaultOpen}>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
 				<div className="@container/main min-[56rem]:overflow-y-auto">
