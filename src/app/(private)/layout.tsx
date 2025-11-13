@@ -20,10 +20,7 @@ export default async function Layout({
 					<header className="sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 rounded-t-xl border-b bg-background/90 backdrop-blur-xs transition-[width,height] ease-linear">
 						<AppNavbar />
 					</header>
-					<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-						{children}
-						<div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
-					</div>
+					<div className="flex flex-col p-6">{children}</div>
 				</div>
 			</SidebarInset>
 		</SidebarProvider>
