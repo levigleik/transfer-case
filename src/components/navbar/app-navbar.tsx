@@ -1,4 +1,5 @@
 import { SearchCommand } from "@/components/navbar/search-command";
+import { ThemeToggle } from "@/components/sidebar/theme-toggle";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -28,7 +29,9 @@ export function AppNavbar() {
 			<div className="hidden @4xl/main:block">
 				<SearchCommand />
 			</div>
-			<div className="flex items-center gap-2 sm:gap-2.5"></div>
+			<div className="flex items-center gap-2 sm:gap-2.5">
+				<ThemeToggle />
+			</div>
 		</div>
 	);
 }
