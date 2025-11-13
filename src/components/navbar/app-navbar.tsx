@@ -5,7 +5,6 @@ import {
 	BreadcrumbList,
 	BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -16,7 +15,7 @@ export function AppNavbar() {
 				<SidebarTrigger className="-ml-1 rounded-full size-9 [&>svg]:text-muted-foreground/80 hover:[&>svg]:text-foreground" />
 				<Separator
 					orientation="vertical"
-					className="mr-2 data-[orientation=vertical]:h-4"
+					className="mx-1.5 sm:mx-2.5 data-[orientation=vertical]:h-4"
 				/>
 				<Breadcrumb>
 					<BreadcrumbList>
@@ -29,6 +28,7 @@ export function AppNavbar() {
 			<div className="hidden @4xl/main:block">
 				<SearchCommand />
 			</div>
+			<div className="flex items-center gap-2 sm:gap-2.5"></div>
 		</div>
 	);
 }

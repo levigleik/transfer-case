@@ -21,7 +21,6 @@ import {
 	CommandSeparator,
 	CommandShortcut,
 } from "@/components/ui/command";
-import { Input } from "@/components/ui/input";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -33,7 +32,7 @@ export function SearchCommand() {
 
 	React.useEffect(() => {
 		const down = (e: KeyboardEvent) => {
-			if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
+			if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
 				setOpen((open) => !open);
 			}
