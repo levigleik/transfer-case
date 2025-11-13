@@ -23,8 +23,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useSidebar } from "@/hooks/useSidebar";
-import { useStore } from "@/hooks/useStore";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function NavProjects({
 	projects,
@@ -35,9 +34,7 @@ export function NavProjects({
 		icon: LucideIcon;
 	}[];
 }) {
-	const sidebar = useStore(useSidebar, (sidebarStore) => sidebarStore);
-	if (!sidebar) return null;
-	const { isMobile } = sidebar;
+	const isMobile = useIsMobile();
 
 	return (
 		<SidebarGroup className="group-data-[collapsible=icon]:hidden">

@@ -12,7 +12,6 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { useStore } from "zustand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -30,16 +29,20 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { type SidebarStore, useSidebar } from "@/hooks/useSidebar";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
+const SIDEBAR_COOKIE_EXPIRE = 30;
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
-type SidebarContextProps = SidebarStore & {
+type SidebarContextProps = {
+	open: boolean;
+	setOpen: (open: boolean) => void;
+	openMobile: boolean;
+	setOpenMobile: (open: boolean) => void;
 	state: "expanded" | "collapsed";
 	toggleSidebar: () => void;
 	isMobile: boolean;
@@ -60,13 +63,9 @@ function SidebarProvider({
 	className,
 	style,
 	children,
-	// open,
-	// setOpen,
 	defaultOpen,
 	...props
 }: React.ComponentProps<"div"> & {
-	// open: boolean;
-	// setOpen: (open: boolean) => void;
 	defaultOpen: boolean;
 }) {
 	const isMobile = useIsMobile();
@@ -76,8 +75,8 @@ function SidebarProvider({
 
 	const handleSetOpen = useCallback((value: boolean) => {
 		setOpen(value);
-		Cookies.set("sidebar_state", String(value), {
-			expires: 30,
+		Cookies.set(SIDEBAR_COOKIE_NAME, String(value), {
+			expires: SIDEBAR_COOKIE_EXPIRE,
 			sameSite: "lax",
 		});
 	}, []);
