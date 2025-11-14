@@ -212,13 +212,13 @@ export function DataTable<TData, TValue>({
 												"flex items-center [&[data-pinned=left][data-last-col=left]]:border-r",
 												"[&[data-pinned][data-last-col]]:border-border",
 												"data-pinned:backdrop-blur-xs",
-												cell.column.getIsPinned() === "right" &&
-													"sticky right-0 z-10",
+												pinSide === "right" && "sticky right-0 z-10",
 												cell.column.id !== "id" &&
 													cell.column.id !== "select" &&
-													cell.column.getIsPinned() !== "right" &&
+													pinSide !== "right" &&
 													"grow",
-												!cell.column.getIsPinned() && "relative",
+												!pinSide && "relative",
+												isLastPinned && "group/table:hover:bg-foreground",
 											)}
 											style={{
 												width: `${cell.column.getSize()}px`,

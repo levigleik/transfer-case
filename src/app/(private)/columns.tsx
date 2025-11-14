@@ -141,7 +141,7 @@ export const columns: ColumnDef<Payment>[] = [
 		enablePinning: true,
 		cell: ({ row }) => {
 			return (
-				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity backdrop-blur-xs p-0">
+				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity backdrop-blur-xs p-0 h-[calc(100%-2px)]">
 					<div className="flex items-center gap-2">
 						<Button variant="ghost" size="icon">
 							<Pencil />
