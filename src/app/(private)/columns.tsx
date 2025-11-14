@@ -41,6 +41,7 @@ export const columns: ColumnDef<Payment>[] = [
 				}
 				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
 				aria-label="Select all"
+				className="dark:bg-background size-4.5 [&_svg]:size-3"
 			/>
 		),
 		cell: ({ row }) => (
@@ -48,6 +49,7 @@ export const columns: ColumnDef<Payment>[] = [
 				checked={row.getIsSelected()}
 				onCheckedChange={(value) => row.toggleSelected(!!value)}
 				aria-label="Select row"
+				className="dark:bg-background size-4.5 [&_svg]:size-3"
 			/>
 		),
 		enableSorting: false,
@@ -139,7 +141,7 @@ export const columns: ColumnDef<Payment>[] = [
 		enablePinning: true,
 		cell: ({ row }) => {
 			return (
-				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity backdrop-blur-xs bg-background dark:bg-background/90 h-[calc(100%-2px)]">
+				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity backdrop-blur-xs p-0">
 					<div className="flex items-center gap-2">
 						<Button variant="ghost" size="icon">
 							<Pencil />

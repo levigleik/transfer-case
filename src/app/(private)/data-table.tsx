@@ -57,16 +57,23 @@ import { cn } from "@/lib/utils";
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
+	paginationProps?: {
+		initialRowsPerPage?: number;
+		rowsPerPage?: number[];
+	};
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
+	paginationProps,
 }: DataTableProps<TData, TValue>) {
+	const initialRowsPerPage = paginationProps?.initialRowsPerPage ?? 10;
+	const rowsPerPage = paginationProps?.rowsPerPage ?? [5, 10, 15, 20];
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
-		pageSize: 5,
+		pageSize: initialRowsPerPage,
 	});
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
@@ -95,10 +102,9 @@ export function DataTable<TData, TValue>({
 	return (
 		<Card
 			className={cn(
-				"rounded-[14px] border-0 p-0 gap-0 overflow-hidden shadow-custom!",
-				"dark:bg-background dark:shadow-none! dark:border dark:border-[#262626]",
+				"rounded-[14px] p-0 gap-0 overflow-hidden shadow-custom! border dark:border-[#262626]",
 				"max-h-[calc(100dvh-var(--header-height))] md:max-h-[calc(100dvh-var(--header-height)-3rem)]",
-				"min-[56rem]:max-h-[calc(100dvh-var(--header-height)-4rem)]",
+				"min-[56rem]:max-h-[calc(100dvh-var(--header-height)-4rem)] dark:shadow-none",
 			)}
 		>
 			<div className="flex h-full border-b items-center py-4 justify-between gap-4 px-5">
@@ -124,29 +130,27 @@ export function DataTable<TData, TValue>({
 					"[&_tr:not(:last-child)_td]:border-b [&_tr]:border-none",
 				)}
 			>
-				<TableHeader className="bg-background/90 dark:bg-background/90 sticky top-0 z-10 rounded-t-xl backdrop-blur-xs">
+				<TableHeader className="sticky top-0 z-10 rounded-t-xl backdrop-blur-xs">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow
 							key={headerGroup.id}
 							className="hover:bg-transparent flex w-full"
 						>
 							{headerGroup.headers.map((header) => {
+								const pinSide = header.column.getIsPinned(); // "left" | "right" | false
+								const isPinned = pinSide !== false;
+								const pinnedIds = isPinned
+									? (table.getState().columnPinning[pinSide] ?? [])
+									: [];
+								const isLastPinned =
+									isPinned &&
+									pinnedIds[pinnedIds.length - 1] === header.column.id;
+
 								return (
 									<TableHead
 										key={header.id}
-										data-pinned={header.column.getIsPinned() || undefined}
-										data-last-col={
-											header.column.getIsPinned()
-												? table
-														.getState()
-														// biome-ignore lint/style/noNonNullAssertion: <explanation>
-														.columnPinning[header.column.getIsPinned()!]?.at(
-															-1,
-														) === header.column.id
-													? header.column.getIsPinned()
-													: undefined
-												: undefined
-										}
+										data-pinned={isPinned ? pinSide : undefined}
+										data-last-col={isLastPinned ? pinSide : undefined}
 										style={{ width: `${header.getSize()}px` }}
 										className={cn(
 											"text-foreground text-left align-middle font-medium whitespace-nowrap",
@@ -156,15 +160,14 @@ export function DataTable<TData, TValue>({
 											"[&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0",
 											"[&[data-pinned=left][data-last-col=left]]:border-r",
 											"[&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0",
-											"[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90",
-											"data-pinned:backdrop-blur-xs dark:data-pinned:bg-background/90",
-											header.column.getIsPinned() === "right" &&
-												"sticky right-0 z-10",
+											"[&[data-pinned][data-last-col]]:border-border",
+											"data-pinned:backdrop-blur-xs",
+											pinSide === "right" && "sticky right-0 z-10",
 											header.column.id !== "id" &&
 												header.column.id !== "select" &&
-												header.column.getIsPinned() !== "right" &&
+												pinSide !== "right" &&
 												"grow",
-											!header.column.getIsPinned() && "relative",
+											!isPinned && "relative",
 										)}
 									>
 										{header.isPlaceholder
@@ -190,41 +193,44 @@ export function DataTable<TData, TValue>({
 									"border-b transition-colors flex w-full group/table",
 								)}
 							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell
-										key={cell.id}
-										data-pinned={cell.column.getIsPinned() || undefined}
-										data-last-col={
-											cell.column.getIsPinned()
-												? table
-														.getState()
-														.columnPinning[cell.column.getIsPinned()!]?.at(
-															-1,
-														) === cell.column.id
-													? cell.column.getIsPinned()
-													: undefined
-												: undefined
-										}
-										className={cn(
-											"px-3",
-											"flex items-center [&[data-pinned=left][data-last-col=left]]:border-r",
-											"[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90",
-											"data-pinned:backdrop-blur-xs dark:data-pinned:bg-background/90",
-											cell.column.getIsPinned() === "right" &&
-												"sticky right-0 z-10",
-											cell.column.id !== "id" &&
-												cell.column.id !== "select" &&
-												cell.column.getIsPinned() !== "right" &&
-												"grow",
-											!cell.column.getIsPinned() && "relative",
-										)}
-										style={{
-											width: `${cell.column.getSize()}px`,
-										}}
-									>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
+								{row.getVisibleCells().map((cell) => {
+									const pinSide = cell.column.getIsPinned(); // "left" | "right" | false
+									const isPinned = pinSide !== false;
+									const pinnedIds = isPinned
+										? (table.getState().columnPinning[pinSide] ?? [])
+										: [];
+									const isLastPinned =
+										isPinned &&
+										pinnedIds[pinnedIds.length - 1] === cell.column.id;
+									return (
+										<TableCell
+											key={cell.id}
+											data-pinned={isPinned ? pinSide : undefined}
+											data-last-col={isLastPinned ? pinSide : undefined}
+											className={cn(
+												"px-3",
+												"flex items-center [&[data-pinned=left][data-last-col=left]]:border-r",
+												"[&[data-pinned][data-last-col]]:border-border",
+												"data-pinned:backdrop-blur-xs",
+												cell.column.getIsPinned() === "right" &&
+													"sticky right-0 z-10",
+												cell.column.id !== "id" &&
+													cell.column.id !== "select" &&
+													cell.column.getIsPinned() !== "right" &&
+													"grow",
+												!cell.column.getIsPinned() && "relative",
+											)}
+											style={{
+												width: `${cell.column.getSize()}px`,
+											}}
+										>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									);
+								})}
 							</TableRow>
 						))
 					) : (
@@ -236,58 +242,38 @@ export function DataTable<TData, TValue>({
 					)}
 				</TableBody>
 			</Table>
-			<div className="flex items-center justify-between gap-8 px-5 py-4 border-t">
-				<div className="flex items-center gap-3">
-					<Label htmlFor={"id"} className="max-sm:sr-only">
-						Rows per page
-					</Label>
-					<Select
-						value={table.getState().pagination.pageSize.toString()}
-						onValueChange={(value) => {
-							table.setPageSize(Number(value));
-						}}
-					>
-						<SelectTrigger id={"id"} className="w-fit whitespace-nowrap">
-							<SelectValue placeholder="Select number of results" />
-						</SelectTrigger>
-						<SelectContent className="[&_*[role=option]]:pr-8 [&_*[role=option]]:pl-2 [&_*[role=option]>span]:right-2 [&_*[role=option]>span]:left-auto">
-							{[5, 10, 25, 50].map((pageSize) => (
-								<SelectItem key={pageSize} value={pageSize.toString()}>
-									{pageSize}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
+			<div className="flex flex-col md:flex-row items-center justify-between flex-1 gap-2.5 border-t px-5 py-4">
+				<div className="text-muted-foreground text-sm">
+					{table.getSelectedRowModel().rows.length} de{" "}
+					{table.getRowCount().toString()} linha(s) selecionadas.
 				</div>
+				<Select
+					value={table.getState().pagination.pageSize.toString()}
+					onValueChange={(value) => {
+						table.setPageSize(Number(value));
+					}}
+				>
+					<SelectTrigger size="sm">
+						<SelectValue placeholder="Select number of results" />
+					</SelectTrigger>
+					<SelectContent className="[&_*[role=option]]:pr-8 [&_*[role=option]]:pl-2 [&_*[role=option]>span]:right-2 [&_*[role=option]>span]:left-auto">
+						{rowsPerPage.map((pageSize) => (
+							<SelectItem key={pageSize} value={pageSize.toString()}>
+								{pageSize} / página
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 
-				<div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
-					<p
-						className="text-muted-foreground text-sm whitespace-nowrap"
-						aria-live="polite"
-					>
-						<span className="text-foreground">
-							{table.getState().pagination.pageIndex *
-								table.getState().pagination.pageSize +
-								1}
-							-
-							{Math.min(
-								Math.max(
-									table.getState().pagination.pageIndex *
-										table.getState().pagination.pageSize +
-										table.getState().pagination.pageSize,
-									0,
-								),
-								table.getRowCount(),
-							)}
-						</span>{" "}
-						of{" "}
-						<span className="text-foreground">
-							{table.getRowCount().toString()}
-						</span>
-					</p>
-				</div>
-
-				<div>
+				<div className="flex items-center gap-4">
+					<div className="flex grow justify-end text-sm whitespace-nowrap">
+						<p className="font-medium">
+							Página {table.getState().pagination.pageIndex + 1} de{" "}
+							{Math.floor(
+								table.getRowCount() / table.getState().pagination.pageSize,
+							) + 1}
+						</p>
+					</div>
 					<Pagination>
 						<PaginationContent>
 							<PaginationItem>
@@ -297,7 +283,7 @@ export function DataTable<TData, TValue>({
 									className="disabled:pointer-events-none disabled:opacity-50"
 									onClick={() => table.firstPage()}
 									disabled={!table.getCanPreviousPage()}
-									aria-label="Go to first page"
+									aria-label="Ir para a primeira página"
 								>
 									<ChevronFirstIcon size={16} aria-hidden="true" />
 								</Button>
