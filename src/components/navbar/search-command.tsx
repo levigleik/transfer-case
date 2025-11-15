@@ -81,7 +81,7 @@ export function SearchCommand() {
 			</Tooltip>
 
 			<CommandDialog open={open} onOpenChange={setOpen}>
-				<CommandInput placeholder="Type a command or search..." />
+				<CommandInput placeholder="Digite um comando para buscar..." />
 				<CommandList>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="Suggestions">

@@ -13,25 +13,30 @@ import {
 	type SortingState,
 	useReactTable,
 } from "@tanstack/react-table";
-import { id } from "ci-info";
 import {
+	Bot,
+	ChevronDown,
 	ChevronFirstIcon,
 	ChevronLastIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
+	CloudDownload,
 	Filter,
+	LucidePlus,
+	RotateCw,
 	Search,
 } from "lucide-react";
 import { useState } from "react";
+import { AiOutlineOpenAI } from "react-icons/ai";
+import { RiOpenaiFill } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
 } from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label";
 import {
 	Pagination,
 	PaginationContent,
@@ -44,6 +49,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
 	Table,
 	TableBody,
@@ -52,6 +58,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
@@ -109,16 +120,87 @@ export function DataTable<TData, TValue>({
 		>
 			<div className="flex h-full border-b items-center py-4 justify-between gap-4 px-5">
 				<div className="flex items-center gap-2">
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								size="icon"
+								className={cn(
+									"cursor-pointer w-10 h-9 relative overflow-hidden",
+									"before:absolute before:inset-0 before:rounded-[inherit] before:bg-[length:250%_250%,100%_100%]",
+									"before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)]",
+									"before:bg-[position:200%_0,0_0] before:bg-no-repeat before:transition-[background-position_0s_ease]",
+									"before:duration-1000 hover:before:bg-[position:-100%_0,0_0]",
+									"dark:before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.2)_50%,transparent_75%,transparent_100%)]",
+								)}
+							>
+								<Bot />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent
+							sideOffset={12}
+							side="bottom"
+							align="start"
+							className={cn(
+								"bg-primary text-primary-foreground w-[310px] text-wrap",
+								"dark:bg-primary dark:text-primary-foreground",
+								"rounded-md border p-4 shadow-md outline-hidden",
+							)}
+						>
+							<div className="flex items-start gap-4">
+								<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white">
+									<RiOpenaiFill size={24} />
+								</div>
+								<div className="space-y-1 font-normal">
+									<p className="font-medium text-sm">@passAI</p>
+									<p className="text-sm">
+										Use the AI assistant to generate reports directly from your
+										dashboard.
+									</p>
+									<p className="text-xs">Powered by PASS — © 2025</p>
+								</div>
+							</div>
+						</TooltipContent>
+					</Tooltip>
+					<Separator
+						orientation="vertical"
+						className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
+					/>
 					<InputGroup>
-						<InputGroupInput placeholder="Search..." />
+						<InputGroupInput placeholder="Buscar..." />
 						<InputGroupAddon>
 							<Search />
 						</InputGroupAddon>
-						<InputGroupAddon align="inline-end">12 results</InputGroupAddon>
 					</InputGroup>
-					<Button variant="outline" className="ml-auto">
+					<Button variant="outline" className="border-dashed">
 						<Filter />
 						Modo
+					</Button>
+					<Button variant="outline" className="border-dashed">
+						<Filter />
+						Status
+					</Button>
+				</div>
+				<div className="flex items-center gap-2">
+					<Button variant="outline">
+						<RotateCw />
+						Atualizar
+					</Button>
+					<ButtonGroup>
+						<Button variant="outline">
+							<CloudDownload />
+							Export
+						</Button>
+						<Button variant="outline" size="icon">
+							<ChevronDown />
+						</Button>
+					</ButtonGroup>
+					<Separator
+						orientation="vertical"
+						className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
+					/>
+					<Button>
+						<LucidePlus />
+						Adicionar
 					</Button>
 				</div>
 			</div>
