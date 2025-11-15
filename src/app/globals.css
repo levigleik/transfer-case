@@ -75,6 +75,7 @@
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: oklch(0.708 0 0);
 	--header-height: calc(var(--spacing) * 14);
+	--tt-scrollbar-color: #25272d1a;
 }
 
 .dark {
@@ -109,6 +110,7 @@
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(1 0 0 / 10%);
 	--sidebar-ring: oklch(0.556 0 0);
+	--tt-scrollbar-color: #eeeef61c;
 }
 
 @layer base {
@@ -118,4 +120,22 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+::-webkit-scrollbar {
+	width: 0.25rem;
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--tt-scrollbar-color) #0000;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--tt-scrollbar-color);
+	border-radius: 9999px;
+}
+
+::-webkit-scrollbar-track {
+	background: 0 0;
 }
