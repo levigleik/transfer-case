@@ -1,81 +1,130 @@
-import { FaUserPlus, FaUsers } from "react-icons/fa6";
-import type { IconType } from "react-icons/lib";
-import { MdSpaceDashboard } from "react-icons/md";
+import {
+	Activity,
+	AudioWaveform,
+	BedDouble,
+	BusFront,
+	CalendarDays,
+	Camera,
+	Command,
+	DollarSign,
+	FileText,
+	GalleryVerticalEnd,
+	LayoutDashboard,
+	Map as MapIcon,
+	MapPin,
+	Package,
+	Puzzle,
+	Settings,
+	Star,
+	Ticket,
+} from "lucide-react";
 
-export type Submenu = {
-	href: string;
-	labelSubmenu: string;
-	icon?: IconType;
-};
-
-export type Menu = {
-	href: string;
-	labelMenu: string;
-	icon: IconType;
-	submenus?: Submenu[];
-};
-
-export type Group = {
-	groupLabel: string;
-	menus: Menu[];
-};
-
-export function getMenuList(): Group[] {
-	return [
+export const navbarItems = {
+	user: {
+		name: "shadcn",
+		email: "m@example.com",
+		avatar: "/avatars/shadcn.jpg",
+	},
+	teams: [
 		{
-			groupLabel: "Painel",
-			menus: [
-				{
-					href: "/dashboard",
-					labelMenu: "Dashboard",
-					icon: MdSpaceDashboard,
-					submenus: [],
-				},
-			],
+			name: "Acme Inc",
+			logo: GalleryVerticalEnd,
+			plan: "Enterprise",
 		},
 		{
-			groupLabel: "Gerenciamento",
-			menus: [
-				{
-					href: "/users",
-					labelMenu: "Usuários",
-					icon: FaUsers,
-					submenus: [
-						{
-							href: "/users",
-							labelSubmenu: "Todos usuários da vida em um só lugar",
-							icon: FaUsers,
-						},
-						{
-							href: "/dashboard",
-							labelSubmenu: "Adicionar usuário",
-							icon: FaUserPlus,
-						},
-					],
-				},
-			],
+			name: "Acme Corp.",
+			logo: AudioWaveform,
+			plan: "Startup",
 		},
 		{
-			groupLabel: "Teste",
-			menus: [
-				{
-					href: "/pretos",
-					labelMenu: "TESTE",
-					icon: FaUsers,
-					submenus: [
-						{
-							href: "/pretos",
-							labelSubmenu: "Todos testes1",
-							icon: FaUsers,
-						},
-						{
-							href: "/users/new",
-							labelSubmenu: "Adicionar usuário 1",
-							icon: FaUserPlus,
-						},
-					],
-				},
-			],
+			name: "Evil Corp.",
+			logo: Command,
+			plan: "Free",
 		},
-	];
-}
+	],
+	principal: [
+		{
+			name: "Painel",
+			url: "#",
+			icon: LayoutDashboard,
+		},
+		{
+			name: "Atividade",
+			url: "#",
+			icon: Activity,
+		},
+	],
+	services: [
+		{
+			name: "Transfer",
+			url: "#",
+			icon: BusFront,
+		},
+		{
+			name: "Combo",
+			url: "#",
+			icon: Package,
+		},
+		{
+			name: "Hospedagem",
+			url: "#",
+			icon: BedDouble,
+		},
+		{
+			name: "Ingresso",
+			url: "#",
+			icon: Ticket,
+		},
+		{
+			name: "Passeio",
+			url: "#",
+			icon: Camera,
+		},
+		{
+			name: "Experiência",
+			url: "#",
+			icon: Star,
+		},
+		{
+			name: "Circuito",
+			url: "#",
+			icon: MapIcon,
+		},
+	],
+	comercial: [
+		{
+			name: "Tarifário",
+			url: "#",
+			icon: DollarSign,
+		},
+		{
+			name: "Disponibilidade",
+			url: "#",
+			icon: CalendarDays,
+		},
+	],
+	compliments: [
+		{
+			name: "Slots",
+			url: "#",
+			icon: Puzzle,
+		},
+		{
+			name: "Perímetros",
+			url: "#",
+			icon: MapPin,
+		},
+		{
+			name: "Diretrizes",
+			url: "#",
+			icon: FileText,
+		},
+	],
+	organization: [
+		{
+			name: "Configurações",
+			url: "#",
+			icon: Settings,
+		},
+	],
+};
