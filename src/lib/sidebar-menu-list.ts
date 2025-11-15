@@ -2,6 +2,7 @@ import {
 	Activity,
 	AudioWaveform,
 	BedDouble,
+	Building2,
 	BusFront,
 	CalendarDays,
 	Camera,
@@ -27,19 +28,16 @@ export const navbarItems = {
 	},
 	teams: [
 		{
-			name: "Acme Inc",
-			logo: GalleryVerticalEnd,
-			plan: "Enterprise",
+			name: "Pass",
+			logo: Building2,
 		},
 		{
 			name: "Acme Corp.",
 			logo: AudioWaveform,
-			plan: "Startup",
 		},
 		{
 			name: "Evil Corp.",
 			logo: Command,
-			plan: "Free",
 		},
 	],
 	principal: [

@@ -23,12 +23,12 @@ export function NavItems({
 	return (
 		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
 			<SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
-			<SidebarMenu>
+			<SidebarMenu className="gap-0.5">
 				{data.map((item) => (
 					<SidebarMenuItem key={item.name}>
 						<SidebarMenuButton
 							asChild
-							className="h-9 text-sm px-4 text-muted-foreground"
+							className="h-9 text-sm px-4 text-muted-foreground gap-3"
 						>
 							<a href={item.url}>
 								<item.icon />
