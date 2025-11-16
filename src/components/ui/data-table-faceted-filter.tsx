@@ -44,10 +44,6 @@ export function DataTableFacetedFilter<TData, TValue>({
 		}))
 		.sort((a, b) => b.count - a.count);
 
-	useEffect(() => {
-		console.log("selectedValues:", Array.from(selectedValues).join(","));
-	}, [selectedValues]);
-
 	return (
 		<Popover>
 			<PopoverTrigger asChild>

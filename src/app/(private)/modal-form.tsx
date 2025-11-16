@@ -1,15 +1,11 @@
-"use client";
-
 import { BusFront, Info, LucidePlus } from "lucide-react";
-import { useState } from "react";
 import { Form } from "@/app/(private)/form";
+import type { VehicleData } from "@/app/(private)/types";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
-	DialogClose,
 	DialogContent,
 	DialogDescription,
-	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
@@ -24,8 +20,13 @@ import {
 	TabsTrigger,
 } from "@/components/ui/tabs";
 
-export function ModalForm() {
-	const [open, setOpen] = useState(false);
+type ModalFormProps = {
+	open: boolean;
+	setOpen: (open: boolean) => void;
+	vehicle?: VehicleData;
+};
+
+export function ModalForm({ open, setOpen, vehicle }: ModalFormProps) {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
@@ -64,7 +65,7 @@ export function ModalForm() {
 					</TabsList>
 					<TabsContents className="mx-1 mb-1 -mt-2 rounded-sm h-full bg-background">
 						<TabsContent value="account" className="space-y-5 p-6">
-							<Form />
+							<Form vehicle={vehicle} />
 						</TabsContent>
 						<TabsContent value="password" className="space-y-6 p-6">
 							<p className="text-sm text-muted-foreground">

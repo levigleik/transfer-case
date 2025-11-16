@@ -2,35 +2,19 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 
-import {
-	ArrowUpDown,
-	ChevronsUpDown,
-	MoreHorizontal,
-	Pencil,
-	Trash,
-} from "lucide-react";
-
+import { ChevronsUpDown, Pencil, Trash } from "lucide-react";
+import type { VehicleData } from "@/app/(private)/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import type { Brand, Company, Status } from "@/types/api";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-	id: string;
-	amount: number;
-	status: "pending" | "processing" | "success" | "failed";
-	email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
+export interface VehicleColumnActions {
+	onEdit: (vehicle: VehicleData) => void;
+	onDelete: (vehicle: VehicleData) => void;
+}
+export const getVehicleColumns = (
+	actions: VehicleColumnActions,
+): ColumnDef<VehicleData>[] => [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -57,7 +41,7 @@ export const columns: ColumnDef<Payment>[] = [
 		size: 40,
 	},
 	{
-		accessorKey: "id",
+		accessorKey: "identifier",
 		header: ({ column }) => {
 			return (
 				<div className="flex items-center h-full">
@@ -66,7 +50,7 @@ export const columns: ColumnDef<Payment>[] = [
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
 					>
-						ID
+						Identificador
 						<ChevronsUpDown className="size-3" />
 					</Button>
 				</div>
@@ -76,10 +60,137 @@ export const columns: ColumnDef<Payment>[] = [
 		size: 65,
 	},
 	{
-		accessorKey: "status",
-		meta: {
-			headerText: "Status",
+		accessorKey: "createdAt",
+		cell: ({ cell }) => {
+			if (!cell.getValue()) return "-";
+			if (typeof cell.getValue() === "string")
+				return new Date(cell.getValue() as string).toLocaleDateString("pt-BR", {
+					day: "2-digit",
+					month: "2-digit",
+					year: "numeric",
+					hour: "2-digit",
+					minute: "2-digit",
+					second: "2-digit",
+				});
 		},
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Criado em
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
+		enableColumnFilter: true,
+	},
+	{
+		accessorKey: "model",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Título
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
+		cell: ({ cell, row }) => (
+			<div className="flex flex-col">
+				<span>{String(cell.getValue())}</span>
+				<span className="text-muted-foreground text-sm">
+					{row.original.classification?.description}
+				</span>
+			</div>
+		),
+		enableColumnFilter: true,
+	},
+	{
+		accessorKey: "brand",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Marca
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
+		cell: ({ cell }) => (cell.getValue() as Brand)?.name,
+		enableColumnFilter: true,
+	},
+	{
+		accessorKey: "capacity",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Capacidade
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
+		enableColumnFilter: true,
+	},
+	{
+		accessorKey: "plate",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Placa
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
+		enableColumnFilter: true,
+	},
+	{
+		accessorKey: "company",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Companhia
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
+		cell: ({ cell }) => (cell.getValue() as Company)?.name,
+		enableColumnFilter: true,
+	},
+	{
+		accessorKey: "status",
 		header: ({ column }) => {
 			return (
 				<div className="flex items-center h-full">
@@ -94,51 +205,7 @@ export const columns: ColumnDef<Payment>[] = [
 				</div>
 			);
 		},
-		enableColumnFilter: true,
-	},
-	{
-		accessorKey: "email",
-		enableColumnFilter: true,
-		enableGlobalFilter: true,
-		meta: {
-			headerText: "Email",
-			filterable: true,
-			filterTitle: "Email",
-		},
-		header: ({ column }) => {
-			return (
-				<div className="flex items-center h-full">
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
-					>
-						Email
-						<ChevronsUpDown className="size-3" />
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "amount",
-		meta: {
-			headerText: "Total",
-		},
-		header: ({ column }) => {
-			return (
-				<div className="flex items-center h-full">
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
-					>
-						Amount
-						<ChevronsUpDown className="size-3" />
-					</Button>
-				</div>
-			);
-		},
+		cell: ({ cell }) => (cell.getValue() as Status)?.name,
 		enableColumnFilter: true,
 	},
 	{
@@ -146,13 +213,27 @@ export const columns: ColumnDef<Payment>[] = [
 		size: 96,
 		enablePinning: true,
 		cell: ({ row }) => {
+			const vehicle = row.original;
+
 			return (
 				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity backdrop-blur-xs p-0 h-[calc(100%-2px)]">
 					<div className="flex items-center gap-2">
-						<Button variant="ghost" size="icon">
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={() => {
+								// console.log(vehicle);
+
+								actions.onEdit(vehicle);
+							}}
+						>
 							<Pencil />
 						</Button>
-						<Button variant="ghost" size="icon">
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={() => actions.onDelete(vehicle)}
+						>
 							<Trash className="text-destructive" />
 						</Button>
 					</div>

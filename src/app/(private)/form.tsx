@@ -1,19 +1,24 @@
+import type { VehicleData } from "@/app/(private)/types";
 import { Button } from "@/components/ui/button";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function Form() {
+interface FormProps {
+	vehicle?: VehicleData;
+}
+
+export function Form({ vehicle }: FormProps) {
 	return (
 		<form>
 			<div className="grid gap-4">
 				<div className="grid gap-3">
-					<Label htmlFor="name-1">Name</Label>
-					<Input id="name-1" name="name" defaultValue="Pedro Duarte" />
+					<Label htmlFor="name-1">Nome</Label>
+					<Input id="name-1" name="name" />
 				</div>
 				<div className="grid gap-3">
 					<Label htmlFor="username-1">Username</Label>
-					<Input id="username-1" name="username" defaultValue="@peduarte" />
+					<Input id="username-1" name="username" />
 				</div>
 			</div>
 			<DialogFooter>

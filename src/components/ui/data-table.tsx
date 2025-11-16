@@ -52,6 +52,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -74,6 +75,7 @@ interface DataTableProps<TData, TValue> {
 		initialRowsPerPage?: number;
 		rowsPerPage?: number[];
 	};
+	loading?: boolean;
 	topRightActions?: React.ReactNode;
 }
 
@@ -82,6 +84,7 @@ export function DataTable<TData, TValue>({
 	data,
 	paginationProps,
 	topRightActions,
+	loading = false,
 }: DataTableProps<TData, TValue>) {
 	const initialRowsPerPage = paginationProps?.initialRowsPerPage ?? 10;
 	const rowsPerPage = paginationProps?.rowsPerPage ?? [5, 10, 15, 20];
@@ -112,9 +115,24 @@ export function DataTable<TData, TValue>({
 	// 	return `Buscar por ${headerTexts.join(", ")}...`;
 	// }, [columns]);
 
+	const tableData = useMemo(
+		() => (loading ? Array(30).fill({}) : data),
+		[loading, data],
+	);
+	const tableColumns = useMemo(
+		() =>
+			loading
+				? columns.map((column) => ({
+						...column,
+						cell: () => <Skeleton className="h-8 w-full rounded-lg" />,
+					}))
+				: columns,
+		[loading, columns],
+	);
+
 	const table = useReactTable({
-		data,
-		columns,
+		data: tableData,
+		columns: tableColumns,
 		getCoreRowModel: getCoreRowModel(),
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
