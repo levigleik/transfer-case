@@ -1,4 +1,7 @@
-import { BusFront, Info } from "lucide-react";
+"use client";
+
+import { BusFront, Info, LucidePlus } from "lucide-react";
+import { useState } from "react";
 import { Form } from "@/app/(private)/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,11 +24,15 @@ import {
 	TabsTrigger,
 } from "@/components/ui/tabs";
 
-export function DialogDemo() {
+export function ModalForm() {
+	const [open, setOpen] = useState(false);
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant="outline">Open Dialog</Button>
+				<Button>
+					<LucidePlus />
+					Adicionar
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="p-0 rounded-xl overflow-hidden gap-0 focus-visible:outline-none sm:max-w-2xl">
 				<div className="flex items-center gap-3 p-6">

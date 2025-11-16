@@ -1,28 +1,9 @@
-import {
-	Bot,
-	ChevronDown,
-	CloudDownload,
-	Filter,
-	LucidePlus,
-	RotateCw,
-	Search,
-} from "lucide-react";
-import { RiOpenaiFill } from "react-icons/ri";
-import { DialogDemo } from "@/app/(private)/modal-form";
+import { ChevronDown, CloudDownload, RotateCw } from "lucide-react";
+import { ModalForm } from "@/app/(private)/modal-form";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Card } from "@/components/ui/card";
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { DataTable } from "../../components/ui/data-table";
 import { columns, type Payment } from "./columns";
@@ -153,7 +134,6 @@ export default async function DemoPage() {
 
 	return (
 		<div className="flex flex-1 flex-col gap-6">
-			{/*<div className="relative w-full overflow-auto">*/}
 			<Card
 				className={cn(
 					"rounded-[14px] p-0 gap-0 overflow-hidden shadow-custom! border dark:border-[#262626]",
@@ -161,10 +141,33 @@ export default async function DemoPage() {
 					"min-[56rem]:max-h-[calc(100dvh-var(--header-height)-4rem)] dark:shadow-none",
 				)}
 			>
-				<DataTable columns={columns} data={data} />
+				<DataTable
+					columns={columns}
+					data={data}
+					topRightActions={
+						<div className="flex items-center gap-2">
+							<Button variant="outline">
+								<RotateCw />
+								Atualizar
+							</Button>
+							<ButtonGroup>
+								<Button variant="outline">
+									<CloudDownload />
+									Export
+								</Button>
+								<Button variant="outline" size="icon">
+									<ChevronDown />
+								</Button>
+							</ButtonGroup>
+							<Separator
+								orientation="vertical"
+								className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
+							/>
+							<ModalForm />
+						</div>
+					}
+				/>
 			</Card>
-			{/*</div>*/}
-			<DialogDemo />
 		</div>
 	);
 }

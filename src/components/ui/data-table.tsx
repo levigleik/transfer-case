@@ -74,12 +74,14 @@ interface DataTableProps<TData, TValue> {
 		initialRowsPerPage?: number;
 		rowsPerPage?: number[];
 	};
+	topRightActions?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
 	paginationProps,
+	topRightActions,
 }: DataTableProps<TData, TValue>) {
 	const initialRowsPerPage = paginationProps?.initialRowsPerPage ?? 10;
 	const rowsPerPage = paginationProps?.rowsPerPage ?? [5, 10, 15, 20];
@@ -213,29 +215,7 @@ export function DataTable<TData, TValue>({
 						);
 					})}
 				</div>
-				<div className="flex items-center gap-2">
-					<Button variant="outline">
-						<RotateCw />
-						Atualizar
-					</Button>
-					<ButtonGroup>
-						<Button variant="outline">
-							<CloudDownload />
-							Export
-						</Button>
-						<Button variant="outline" size="icon">
-							<ChevronDown />
-						</Button>
-					</ButtonGroup>
-					<Separator
-						orientation="vertical"
-						className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
-					/>
-					<Button>
-						<LucidePlus />
-						Adicionar
-					</Button>
-				</div>
+				{topRightActions}
 			</div>
 			<Table
 				className={cn(
