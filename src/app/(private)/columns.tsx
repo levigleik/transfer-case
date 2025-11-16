@@ -56,7 +56,6 @@ export const columns: ColumnDef<Payment>[] = [
 		enableHiding: false,
 		size: 40,
 	},
-
 	{
 		accessorKey: "id",
 		header: ({ column }) => {
@@ -73,10 +72,14 @@ export const columns: ColumnDef<Payment>[] = [
 				</div>
 			);
 		},
+		enableColumnFilter: true,
 		size: 65,
 	},
 	{
 		accessorKey: "status",
+		meta: {
+			headerText: "Status",
+		},
 		header: ({ column }) => {
 			return (
 				<div className="flex items-center h-full">
@@ -91,9 +94,17 @@ export const columns: ColumnDef<Payment>[] = [
 				</div>
 			);
 		},
+		enableColumnFilter: true,
 	},
 	{
 		accessorKey: "email",
+		enableColumnFilter: true,
+		enableGlobalFilter: true,
+		meta: {
+			headerText: "Email",
+			filterable: true,
+			filterTitle: "Email",
+		},
 		header: ({ column }) => {
 			return (
 				<div className="flex items-center h-full">
@@ -111,6 +122,9 @@ export const columns: ColumnDef<Payment>[] = [
 	},
 	{
 		accessorKey: "amount",
+		meta: {
+			headerText: "Total",
+		},
 		header: ({ column }) => {
 			return (
 				<div className="flex items-center h-full">
@@ -125,15 +139,7 @@ export const columns: ColumnDef<Payment>[] = [
 				</div>
 			);
 		},
-		// cell: ({ row }) => {
-		// 	const amount = parseFloat(row.getValue("amount"));
-		// 	const formatted = new Intl.NumberFormat("en-US", {
-		// 		style: "currency",
-		// 		currency: "USD",
-		// 	}).format(amount);
-		//
-		// 	return <div className="text-right font-medium">{formatted}</div>;
-		// },
+		enableColumnFilter: true,
 	},
 	{
 		id: "actions",

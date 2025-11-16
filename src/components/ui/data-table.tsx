@@ -6,6 +6,8 @@ import {
 	type ColumnPinningState,
 	flexRender,
 	getCoreRowModel,
+	getFacetedRowModel,
+	getFacetedUniqueValues,
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
@@ -26,12 +28,12 @@ import {
 	RotateCw,
 	Search,
 } from "lucide-react";
-import { useState } from "react";
-import { AiOutlineOpenAI } from "react-icons/ai";
+import { useMemo, useState } from "react";
 import { RiOpenaiFill } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Card } from "@/components/ui/card";
+import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
+import { Input } from "@/components/ui/input";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -81,6 +83,8 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
 	const initialRowsPerPage = paginationProps?.initialRowsPerPage ?? 10;
 	const rowsPerPage = paginationProps?.rowsPerPage ?? [5, 10, 15, 20];
+
+	const [globalFilter, setGlobalFilter] = useState("");
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
@@ -91,6 +95,21 @@ export function DataTable<TData, TValue>({
 		right: ["actions"],
 	});
 
+	// const placeholderText = useMemo(() => {
+	// 	const headerTexts = columns
+	// 		.filter(
+	// 			(col) =>
+	// 				col.enableColumnFilter === true && (col.meta as any)?.headerText,
+	// 		)
+	// 		.map((col) => (col.meta as any).headerText); // Usamos 'as any' para funcionar mesmo sem a etapa de tipagem
+	//
+	// 	if (headerTexts.length === 0) {
+	// 		return "Filtrar tudo...";
+	// 	}
+	//
+	// 	return `Buscar por ${headerTexts.join(", ")}...`;
+	// }, [columns]);
+
 	const table = useReactTable({
 		data,
 		columns,
@@ -99,25 +118,31 @@ export function DataTable<TData, TValue>({
 		getSortedRowModel: getSortedRowModel(),
 		onColumnFiltersChange: setColumnFilters,
 		getFilteredRowModel: getFilteredRowModel(),
+		getFacetedRowModel: getFacetedRowModel(),
+		getFacetedUniqueValues: getFacetedUniqueValues(),
 		getPaginationRowModel: getPaginationRowModel(),
 		onPaginationChange: setPagination,
 		onColumnPinningChange: setColumnPinning,
+		onGlobalFilterChange: setGlobalFilter,
 		state: {
 			sorting,
 			columnFilters,
 			pagination,
 			columnPinning,
+			globalFilter,
 		},
 	});
 
+	const facetedFilters = useMemo(
+		() =>
+			table
+				.getAllColumns()
+				.filter((column) => column.columnDef?.meta?.filterable),
+		[table],
+	);
+
 	return (
-		<Card
-			className={cn(
-				"rounded-[14px] p-0 gap-0 overflow-hidden shadow-custom! border dark:border-[#262626]",
-				"max-h-[calc(100dvh-var(--header-height))] md:max-h-[calc(100dvh-var(--header-height)-3rem)]",
-				"min-[56rem]:max-h-[calc(100dvh-var(--header-height)-4rem)] dark:shadow-none",
-			)}
-		>
+		<>
 			<div className="flex h-full border-b items-center py-4 justify-between gap-4 px-5">
 				<div className="flex items-center gap-2">
 					<Tooltip>
@@ -165,20 +190,28 @@ export function DataTable<TData, TValue>({
 						orientation="vertical"
 						className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
 					/>
-					<InputGroup>
-						<InputGroupInput placeholder="Buscar..." />
+					<InputGroup className="w-52">
+						<InputGroupInput
+							// placeholder={placeholderText}
+							placeholder="Buscar..."
+							value={globalFilter ?? ""}
+							onChange={(event) => setGlobalFilter(event.target.value)}
+							className="max-w-sm"
+						/>
 						<InputGroupAddon>
 							<Search />
 						</InputGroupAddon>
 					</InputGroup>
-					<Button variant="outline" className="border-dashed">
-						<Filter />
-						Modo
-					</Button>
-					<Button variant="outline" className="border-dashed">
-						<Filter />
-						Status
-					</Button>
+					{facetedFilters.map((column) => {
+						const meta = column.columnDef.meta;
+						return (
+							<DataTableFacetedFilter
+								key={column.id}
+								column={column}
+								title={meta?.filterTitle || column.id}
+							/>
+						);
+					})}
 				</div>
 				<div className="flex items-center gap-2">
 					<Button variant="outline">
@@ -204,7 +237,6 @@ export function DataTable<TData, TValue>({
 					</Button>
 				</div>
 			</div>
-
 			<Table
 				className={cn(
 					"w-full caption-bottom text-sm relative grid border-separate",
@@ -413,6 +445,6 @@ export function DataTable<TData, TValue>({
 					</Pagination>
 				</div>
 			</div>
-		</Card>
+		</>
 	);
 }

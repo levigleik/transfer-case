@@ -1,5 +1,31 @@
+import {
+	Bot,
+	ChevronDown,
+	CloudDownload,
+	Filter,
+	LucidePlus,
+	RotateCw,
+	Search,
+} from "lucide-react";
+import { RiOpenaiFill } from "react-icons/ri";
+import { DialogDemo } from "@/app/(private)/modal-form";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Card } from "@/components/ui/card";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "@/components/ui/input-group";
+import { Separator } from "@/components/ui/separator";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { DataTable } from "../../components/ui/data-table";
 import { columns, type Payment } from "./columns";
-import { DataTable } from "./data-table";
 
 async function getData(): Promise<Payment[]> {
 	// Fetch data from your API here.
@@ -128,8 +154,17 @@ export default async function DemoPage() {
 	return (
 		<div className="flex flex-1 flex-col gap-6">
 			{/*<div className="relative w-full overflow-auto">*/}
-			<DataTable columns={columns} data={data} />
+			<Card
+				className={cn(
+					"rounded-[14px] p-0 gap-0 overflow-hidden shadow-custom! border dark:border-[#262626]",
+					"max-h-[calc(100dvh-var(--header-height))] md:max-h-[calc(100dvh-var(--header-height)-3rem)]",
+					"min-[56rem]:max-h-[calc(100dvh-var(--header-height)-4rem)] dark:shadow-none",
+				)}
+			>
+				<DataTable columns={columns} data={data} />
+			</Card>
 			{/*</div>*/}
+			<DialogDemo />
 		</div>
 	);
 }
