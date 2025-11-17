@@ -3,10 +3,10 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { ChevronsUpDown, Pencil, Trash } from "lucide-react";
-import type { VehicleData } from "@/app/(private)/types";
+import type { VehicleData } from "@/app/(private)/validation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Brand, Company, Status } from "@/types/api";
+import type { BrandType, CompanyType, StatusType } from "@/types/models";
 
 export interface VehicleColumnActions {
 	onEdit: (vehicle: VehicleData) => void;
@@ -131,7 +131,7 @@ export const getVehicleColumns = (
 				</div>
 			);
 		},
-		cell: ({ cell }) => (cell.getValue() as Brand)?.name,
+		cell: ({ cell }) => (cell.getValue() as BrandType)?.name,
 		enableColumnFilter: true,
 	},
 	{
@@ -186,7 +186,7 @@ export const getVehicleColumns = (
 				</div>
 			);
 		},
-		cell: ({ cell }) => (cell.getValue() as Company)?.name,
+		cell: ({ cell }) => (cell.getValue() as CompanyType)?.name,
 		enableColumnFilter: true,
 	},
 	{
@@ -205,7 +205,7 @@ export const getVehicleColumns = (
 				</div>
 			);
 		},
-		cell: ({ cell }) => (cell.getValue() as Status)?.name,
+		cell: ({ cell }) => (cell.getValue() as StatusType)?.name,
 		enableColumnFilter: true,
 	},
 	{
@@ -216,7 +216,7 @@ export const getVehicleColumns = (
 			const vehicle = row.original;
 
 			return (
-				<div className="opacity-0 group-hover/table:opacity-100 transition-opacity backdrop-blur-xs p-0 h-[calc(100%-2px)]">
+				<div className="md:opacity-0 md:group-hover/table:opacity-100 transition-opacity p-0 h-[calc(100%-2px)]">
 					<div className="flex items-center gap-2">
 						<Button
 							variant="ghost"

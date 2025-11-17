@@ -242,7 +242,7 @@ export function DataTable<TData, TValue>({
 					"[&_tr:not(:last-child)_td]:border-b [&_tr]:border-none",
 				)}
 			>
-				<TableHeader className="sticky top-0 z-10 rounded-t-xl backdrop-blur-xs">
+				<TableHeader className="sticky top-0 z-10 rounded-t-xl">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow
 							key={headerGroup.id}
@@ -273,7 +273,7 @@ export function DataTable<TData, TValue>({
 											"[&[data-pinned=left][data-last-col=left]]:border-r",
 											"[&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0",
 											"[&[data-pinned][data-last-col]]:border-border",
-											"data-pinned:backdrop-blur-xs",
+											// "data-pinned:backdrop-blur-xs",
 											pinSide === "right" && "sticky right-0 z-10",
 											header.column.id !== "id" &&
 												header.column.id !== "select" &&
@@ -323,7 +323,7 @@ export function DataTable<TData, TValue>({
 												"px-3",
 												"flex items-center [&[data-pinned=left][data-last-col=left]]:border-r",
 												"[&[data-pinned][data-last-col]]:border-border",
-												"data-pinned:backdrop-blur-xs",
+												// "data-pinned:backdrop-blur-xs",
 												pinSide === "right" && "sticky right-0 z-10",
 												cell.column.id !== "id" &&
 													cell.column.id !== "select" &&
