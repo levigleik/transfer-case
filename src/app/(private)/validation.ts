@@ -24,7 +24,6 @@ const VehicleBaseSchema = VehicleSchema.omit({
 });
 
 export const VehiclePayloadSchema = VehicleBaseSchema.extend({
-	identifier: z.coerce.number(),
 	capacity: z.coerce.number(),
 	doors: z.coerce.number(),
 	brandId: z.coerce.number(),
