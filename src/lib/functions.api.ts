@@ -1,7 +1,18 @@
 import { toast } from "sonner";
 import api from "@/lib/api";
-import type { DeleteData, GetData, PostData, PutData } from "@/types/api";
+import type { DeleteData, GetData, PostData, PutData } from "@/types/models";
 
+/**
+ * Função genérica para realizar requisições GET.
+ * Parâmetros:
+ * - url: endpoint da API
+ * - query: parâmetros opcionais para consulta
+ * - id: id opcional para buscar um item específico
+ * - signal: controle de abortamento da requisição
+ *
+ * Tipos genéricos:
+ * - TReturn: tipo esperado do retorno da API
+ */
 export const getData = async <TReturn>(val: GetData) => {
 	const { url, query, id, signal } = val;
 	const params = query ? `?${query}` : "";
@@ -12,6 +23,17 @@ export const getData = async <TReturn>(val: GetData) => {
 	return data;
 };
 
+/**
+ * Função genérica para realizar requisições POST.
+ * Parâmetros:
+ * - url: endpoint da API
+ * - data: corpo da requisição (dados do formulário)
+ * - signal: controle de abortamento da requisição
+ *
+ * Tipos genéricos:
+ * - TReturn: tipo esperado do retorno da API
+ * - TForm: tipo dos dados enviados no corpo da requisição
+ */
 export const postData = async <TReturn, TForm>(val: PostData<TForm>) => {
 	const { url, data: dataForm, signal } = val;
 
@@ -19,18 +41,46 @@ export const postData = async <TReturn, TForm>(val: PostData<TForm>) => {
 	return data;
 };
 
+/**
+ * Função genérica para realizar requisições PUT.
+ * Parâmetros:
+ * - url: endpoint da API
+ * - id: identificador do recurso a ser atualizado
+ * - data: corpo da requisição (dados do formulário)
+ * - signal: controle de abortamento da requisição
+ *
+ * Tipos genéricos:
+ * - TReturn: tipo esperado do retorno da API
+ * - TForm: tipo dos dados enviados no corpo da requisição
+ */
 export const putData = async <TReturn, TForm>(val: PutData<TForm>) => {
 	const { url, data: dataForm, id, signal } = val;
 	const { data } = await api.put<TReturn>(`${url}/${id}`, dataForm, { signal });
 	return data;
 };
 
+/**
+ * Função genérica para realizar requisições DELETE.
+ * Parâmetros:
+ * - url: endpoint da API
+ * - id: identificador do recurso a ser removido
+ * - signal: controle de abortamento da requisição
+ *
+ * Tipos genéricos:
+ * - TReturn: tipo esperado do retorno da API
+ */
 export const deleteData = async <TReturn>(val: DeleteData) => {
 	const { url, id, signal } = val;
 	const { data } = await api.delete<TReturn>(`${url}/${id}`, { signal });
 	return data;
 };
 
+/**
+ * Função para tratar erros de requisições e exibir mensagens no toast.
+ * Parâmetros:
+ * - error: erro retornado pela requisição
+ * - message: mensagem personalizada opcional
+ */
 export const toastErrorsApi = (error: any, message?: string) => {
 	if (error?.response) {
 		if (message) return toast.error(message);
