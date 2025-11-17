@@ -1,12 +1,12 @@
-import type { GasSupply } from "@/types/api/gas-supply";
+import type { GasSupplyType } from "@/types/models/gas-supply";
 
-import type { Vehicle } from "@/types/api/vehicle";
+import type { VehicleType } from "@/types/models/vehicle";
 
-export interface Gas {
+export interface GasType {
 	id: number;
 	type: string;
-	vehicle: Vehicle[];
-	gasSupplies: GasSupply[];
+	vehicle: VehicleType[];
+	gasSupplies: GasSupplyType[];
 	createdAt: Date;
 	updatedAt: Date;
 }

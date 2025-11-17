@@ -1,11 +1,13 @@
-import type { Brand } from "@/types/api/brand";
-import type { Category } from "@/types/api/category";
-import type { Company } from "@/types/api/company";
-import type { Gas } from "@/types/api/gas";
+import type { BrandType } from "@/types/models/brand";
+import type { CategoryType } from "@/types/models/category";
+import type { ClassificationType } from "@/types/models/classification";
+import type { CompanyType } from "@/types/models/company";
+import type { GasType } from "@/types/models/gas";
+import type { StatusType } from "@/types/models/status";
 
 type PlateType = "MERCOSUL" | "OUTRO";
 
-export interface Vehicle {
+export interface VehicleType {
 	id: number;
 	identifier: number;
 	mode: string;
@@ -20,14 +22,18 @@ export interface Vehicle {
 	review: number;
 	description?: string | null;
 	photos: string[];
-	gas: Gas;
+	gas: GasType;
 	gasId: number;
-	brand: Brand;
+	brand: BrandType;
 	brandId: number;
-	category: Category;
+	category: CategoryType;
 	categoryId: number;
-	company: Company;
+	classification: ClassificationType;
+	classificationId: number;
+	company: CompanyType;
 	companyId: number;
+	status: StatusType;
+	statusId: number;
 	createdAt: Date;
 	updatedAt: Date;
 }

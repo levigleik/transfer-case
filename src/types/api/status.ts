@@ -1,4 +1,4 @@
-export interface Status {
+export interface StatusType {
 	id: number;
 	name: string;
 	createdAt: Date;

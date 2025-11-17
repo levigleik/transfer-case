@@ -11,9 +11,15 @@ export * from "./seriousness";
 export * from "./status";
 export * from "./vehicle";
 
-export interface ContextApiProps {
-	params?: { id?: string };
-}
+type NumToStr<T> = {
+	[K in keyof T]: T[K] extends number ? string : T[K]; // mantém os outros tipos iguais
+};
+type BaseFormSchema<T> = Omit<T, "id" | "createdAt" | "updatedAt">;
+
+export type FormSchema<T, TRelations extends keyof T = never> = NumToStr<
+	Omit<BaseFormSchema<T>, TRelations>
+>;
+
 export interface GetData {
 	url: string;
 	query?: string;

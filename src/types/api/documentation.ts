@@ -1,4 +1,4 @@
-export interface Documentation {
+export interface DocumentationType {
 	id: number;
 	type: string;
 	expiryAt: Date;

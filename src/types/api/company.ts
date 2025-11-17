@@ -1,10 +1,10 @@
-import type { Vehicle } from "@/types/api/vehicle";
+import type { VehicleType } from "@/types/models/vehicle";
 
-export interface Company {
+export interface CompanyType {
 	id: number;
 	name: string;
 	cnpj: string;
-	vehicles: Vehicle[];
+	vehicles: VehicleType[];
 	createdAt: Date;
 	updatedAt: Date;
 }

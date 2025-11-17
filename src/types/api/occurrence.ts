@@ -1,13 +1,13 @@
-import type { Classification } from "@/types/api/classification";
-import type { Seriousness } from "@/types/api/seriousness";
+import type { ClassificationType } from "@/types/models/classification";
+import type { SeriousnessType } from "@/types/models/seriousness";
 
-export interface Occurrence {
+export interface OccurrenceType {
 	id: number;
 	date: Date;
 	description: string;
-	seriousness: Seriousness;
+	seriousness: SeriousnessType;
 	seriousnessId: number;
-	classification: Classification;
+	classification: ClassificationType;
 	classificationId: number;
 	createdAt: Date;
 	updatedAt: Date;

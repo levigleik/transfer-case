@@ -1,9 +1,9 @@
-import type { Occurrence } from "@/types/api/occurrence";
+import type { OccurrenceType } from "@/types/models/occurrence";
 
-export interface Seriousness {
+export interface SeriousnessType {
 	id: number;
 	level: string;
-	occurences: Occurrence[];
+	occurences: OccurrenceType[];
 	createdAt: Date;
 	updatedAt: Date;
 }

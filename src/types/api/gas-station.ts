@@ -1,4 +1,4 @@
-export interface GasStation {
+export interface GasStationType {
 	id: number;
 	name: string;
 	createdAt: Date;
