@@ -1,11 +1,17 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, CloudDownload, Info, RotateCw } from "lucide-react";
+import {
+	ChevronDown,
+	CloudDownload,
+	ImageIcon,
+	Info,
+	RotateCw,
+} from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Form } from "@/app/(private)/form";
-import { ModalForm } from "@/app/(private)/modal-form";
-import type { VehicleData } from "@/app/(private)/validation";
+import { Form } from "@/app/(private)/components/form";
+import { ModalForm } from "@/app/(private)/components/modal-form";
+import type { VehicleData } from "@/app/(private)/utils/validation";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Card } from "@/components/ui/card";
@@ -50,7 +56,7 @@ export default function TableVehicle() {
 	const columns = useMemo(() => getVehicleColumns(actions), [actions]);
 
 	const { data, isLoading, refetch } = useQuery({
-		queryKey: ["student-get"],
+		queryKey: ["vehicle-get"],
 		queryFn: ({ signal }) =>
 			getData<VehicleData[]>({
 				url: "/vehicle",
@@ -93,33 +99,33 @@ export default function TableVehicle() {
 							/>
 							<ModalForm open={isEditModalOpen} setOpen={setIsEditModalOpen}>
 								<Tabs
-									defaultValue="account"
+									defaultValue="general-data"
 									className="flex flex-col flex-1 overflow-hidden"
 								>
 									<TabsList className="inline-flex w-fit items-center justify-center p-[3px] text-foreground h-auto gap-2 rounded-none bg-transparent px-6 py-1 flex-shrink-0">
 										<TabsTrigger
-											value="account"
+											value="general-data"
 											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
 										>
 											<Info />
-											Informações
+											Dados gerais
 										</TabsTrigger>
 										<TabsTrigger
-											value="password"
+											value="images"
 											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
 										>
-											Password
+											<ImageIcon />
+											Imagens
 										</TabsTrigger>
 									</TabsList>
-
 									<TabsContents className="flex-1 overflow-y-auto">
-										<TabsContent value="account" className="space-y-5 p-6">
+										<TabsContent value="general-data" className="space-y-5 p-6">
 											<Form
 												vehicle={editingVehicle}
 												setIsModalOpen={setIsEditModalOpen}
 											/>
 										</TabsContent>
-										<TabsContent value="password" className="space-y-6 p-6">
+										<TabsContent value="images" className="space-y-6 p-6">
 											<p className="text-sm text-muted-foreground">
 												Change your password here. After saving, you&apos;ll be
 												logged out.

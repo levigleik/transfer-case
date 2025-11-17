@@ -3,7 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { ChevronsUpDown, Pencil, Trash } from "lucide-react";
-import type { VehicleData } from "@/app/(private)/validation";
+import type { VehicleData } from "@/app/(private)/utils/validation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { BrandType, CompanyType, StatusType } from "@/types/models";

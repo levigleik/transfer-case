@@ -26,7 +26,7 @@ export interface PostData<TForm> {
 export interface PutData<TForm> {
 	url: string;
 	data: TForm;
-	id: any;
+	id: number;
 	signal?: AbortSignal;
 }
 export interface DeleteData {
