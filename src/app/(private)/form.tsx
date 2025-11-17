@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-
+import { useVehicleFormOptions } from "@/app/(private)/use-vehicle-form-options";
 import {
 	type VehicleData,
 	type VehicleForm,
@@ -10,80 +10,126 @@ import {
 	type VehiclePayload,
 	VehiclePayloadSchema,
 } from "@/app/(private)/validation";
-
 import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
 	Field,
-	FieldDescription,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
 } from "@/components/ui/field";
+import { FormSelect } from "@/components/ui/form-select";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { postData, putData, toastErrorsApi } from "@/lib/functions.api";
-import type { PostData, PutData, VehicleType } from "@/types/models";
+import {
+	getData,
+	postData,
+	putData,
+	toastErrorsApi,
+} from "@/lib/functions.api";
+import type {
+	BrandType,
+	CompanyType,
+	PostData,
+	PutData,
+	StatusType,
+	VehicleType,
+} from "@/types/models";
 
 interface FormProps {
+	setIsModalOpen: (open: boolean) => void;
 	vehicle?: VehicleData;
 }
 
-export function Form({ vehicle }: FormProps) {
+export function Form({ vehicle, setIsModalOpen }: FormProps) {
 	const { handleSubmit, setValue, control, reset, register } =
 		useForm<VehicleForm>({
 			resolver: zodResolver(VehicleFormSchema),
 			defaultValues: {
-				identifier: vehicle?.identifier.toString() ?? "",
-				model: vehicle?.model ?? "",
-				year: vehicle?.year ?? "",
-				capacity: vehicle?.capacity.toString() ?? "",
-				doors: vehicle?.doors.toString() ?? "",
-				uf: vehicle?.uf ?? "",
-				plateType: vehicle?.plateType ?? "MERCOSUL",
-				plate: vehicle?.plate ?? "",
-				renavam: vehicle?.renavam ?? "",
-				chassi: vehicle?.chassi ?? "",
-				review: vehicle?.review.toString() ?? "",
-				description: vehicle?.description ?? "",
-				photos: vehicle?.photos ?? [],
-				gasId: vehicle?.gasId.toString() ?? "",
-				brandId: vehicle?.brandId.toString() ?? "",
-				classificationId: vehicle?.classificationId.toString() ?? "",
-				categoryId: vehicle?.categoryId.toString() ?? "",
-				companyId: vehicle?.companyId.toString() ?? "",
-				statusId: vehicle?.statusId.toString() ?? "",
+				// identifier: vehicle?.identifier.toString() ?? "",
+				// model: vehicle?.model ?? "",
+				// year: vehicle?.year ?? "",
+				// capacity: vehicle?.capacity.toString() ?? "",
+				// doors: vehicle?.doors.toString() ?? "",
+				// uf: vehicle?.uf ?? "",
+				// plateType: vehicle?.plateType ?? "MERCOSUL",
+				// plate: vehicle?.plate ?? "",
+				// renavam: vehicle?.renavam ?? "",
+				// chassi: vehicle?.chassi ?? "",
+				// review: vehicle?.review.toString() ?? "",
+				// description: vehicle?.description ?? "",
+				// photos: vehicle?.photos ?? [],
+				// gasId: vehicle?.gasId.toString() ?? "",
+				// brandId: vehicle?.brandId.toString() ?? "",
+				// classificationId: vehicle?.classificationId.toString() ?? "",
+				// categoryId: vehicle?.categoryId.toString() ?? "",
+				// companyId: vehicle?.companyId.toString() ?? "",
+				// statusId: vehicle?.statusId.toString() ?? "",
+				identifier: "ss",
+				capacity: "4",
+				doors: "4",
+				brandId: "1", // Geralmente um ID, "1" funciona
+				categoryId: "1",
+				classificationId: "1",
+				gasId: "1",
+				companyId: "1",
+				statusId: "1",
+				review: "5", // Ex: 5 dias para revisão
+				model: "Modelo Teste",
+				renavam: "1234567890d0",
+				chassi: "9B1234XYZ56189",
+
+				// Campos com tamanho específico
+				year: "2023", // length(4)
+				uf: "SP", // length(2)
+				plate: "ABC1Df3", // min(7)
+
+				// Campos não listados (você pode precisar adicionar)
+				plateType: "MERCOSUL",
+				description: "Descrição de teste.",
+				photos: [],
 			},
 		});
 
-	const { mutateAsync: mutatePostVehicle, isPending: loadingPostVehicle } =
+	const { mutateAsync: mutatePostVehicle, isPending: isLoadingPostVehicle } =
 		useMutation({
 			mutationFn: async (val: PostData<VehiclePayload>) =>
 				postData<VehicleType, VehiclePayload>(val),
 			mutationKey: ["vehicle-post"],
 		});
 
-	const { mutateAsync: mutatePutVehicle, isPending: loadingPutVehicle } =
+	const { mutateAsync: mutatePutVehicle, isPending: isLoadingPutVehicle } =
 		useMutation({
 			mutationFn: (val: PutData<VehiclePayload>) =>
 				putData<VehicleType, VehiclePayload>(val),
 			mutationKey: ["vehicle-put"],
 		});
 
-	const loading = loadingPostVehicle || loadingPutVehicle;
+	const { statusOptions, companyOptions, brandOptions, isLoadingOptions } =
+		useVehicleFormOptions();
+
+	const loading =
+		isLoadingPostVehicle || isLoadingPutVehicle || isLoadingOptions;
+	// const loading = true;
+
+	const onErrors = () => {
+		toast.error("Por favor, corrija os erros no formulário.");
+	};
 
 	const onSubmit = (data: VehicleForm) => {
 		try {
 			const parseData = VehiclePayloadSchema.parse(data);
 			if (!vehicle) {
-				console.log("Submitting new vehicle:", parseData);
 				mutatePostVehicle({
 					url: "/vehicle",
 					data: parseData,
 				})
 					.then(() => {
 						toast.success("Veículo cadastrado com sucesso");
+						setIsModalOpen(false);
 						reset();
 					})
 					.catch((error) => {
@@ -110,306 +156,183 @@ export function Form({ vehicle }: FormProps) {
 	return (
 		<form
 			autoComplete="off"
-			onSubmit={handleSubmit(onSubmit)}
+			onSubmit={handleSubmit(onSubmit, onErrors)}
 			className="flex w-full flex-col gap-4"
 		>
-			<FieldGroup>
+			<FieldGroup className="grid grid-cols-1 md:grid-cols-3 gap-4">
 				<Controller
 					name="identifier"
 					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-title">
-								Identificador
-							</FieldLabel>
-							<Input
-								{...field}
-								id="form-rhf-demo-title"
-								aria-invalid={fieldState.invalid}
-								placeholder="Transfer Paulo"
-								autoComplete="off"
-							/>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-8" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Identificador</FieldLabel>
+								<Input
+									{...field}
+									aria-invalid={fieldState.invalid}
+									placeholder="Transfer Paulo"
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
 				/>
 				<Controller
-					name="description"
+					name="statusId"
 					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-10" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Status</FieldLabel>
+								<FormSelect
+									value={field.value ?? ""}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+									aria-invalid={fieldState.invalid}
+									options={statusOptions}
+									placeholder="Selecione um status..."
+									className="w-full"
+									name={field.name}
+								/>
+
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
 				/>
 				<Controller
-					name="description"
+					name="companyId"
 					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
-				/>
-				<Controller
-					name="description"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
-				/>
-				<Controller
-					name="description"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
-				/>
-				<Controller
-					name="description"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
-				/>
-				<Controller
-					name="description"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
-				/>
-				<Controller
-					name="description"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
-				/>
-				<Controller
-					name="description"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
-				/>
-				<Controller
-					name="description"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
-							</FieldLabel>
-							<Textarea
-								{...field}
-								id="form-rhf-demo-description"
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							<FieldDescription>
-								Include steps to reproduce, expected behavior, and what actually
-								happened.
-							</FieldDescription>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-10" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Companhia</FieldLabel>
+								<FormSelect
+									value={field.value ?? ""}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+									aria-invalid={fieldState.invalid}
+									options={companyOptions}
+									placeholder="Selecione uma companhia..."
+									className="w-full"
+									name={field.name}
+								/>
+
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
 				/>
 			</FieldGroup>
+			<FieldGroup className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<Controller
+					name="model"
+					control={control}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-8" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Modelo</FieldLabel>
+								<Input
+									{...field}
+									aria-invalid={fieldState.invalid}
+									placeholder="Buss Vissta 340"
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+				<Controller
+					name="year"
+					control={control}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-8" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Ano</FieldLabel>
+								<Input
+									{...field}
+									aria-invalid={fieldState.invalid}
+									placeholder="2012"
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+				<Controller
+					name="brandId"
+					control={control}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-10" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Marca</FieldLabel>
+								<FormSelect
+									value={field.value ?? ""}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+									aria-invalid={fieldState.invalid}
+									options={brandOptions}
+									placeholder="Selecione uma marca..."
+									className="w-full"
+									name={field.name}
+								/>
+
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+			</FieldGroup>
+
 			<Controller
-				name="identifier"
+				name="description"
 				control={control}
-				defaultValue=""
-				rules={{ required: "Campo obrigatório" }}
-				render={({ field, fieldState: { error } }) =>
+				render={({ field, fieldState }) =>
 					loading ? (
-						<Skeleton className="rounded-md" />
+						<Skeleton className="rounded-md w-full h-8" />
 					) : (
-						<Input
-							id={field.name}
-							type="text"
-							onChange={field.onChange}
-							name={field.name}
-							value={field.value}
-							color="primary"
-						/>
+						<Field data-invalid={fieldState.invalid}>
+							<FieldLabel htmlFor="form-rhf-demo-description">
+								Description
+							</FieldLabel>
+							<Textarea
+								{...field}
+								placeholder="316"
+								rows={6}
+								className="min-h-24"
+								aria-invalid={fieldState.invalid}
+								value={field.value ?? ""} // parse para caso seja null
+							/>
+							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+						</Field>
 					)
 				}
 			/>
-			{/*<Controller*/}
-			{/*	name="courseId"*/}
-			{/*	control={control}*/}
-			{/*	rules={{ required: "Campo obrigatório" }}*/}
-			{/*	render={({ field, fieldState: { error } }) => (*/}
-			{/*		<Skeleton className="rounded-md" isLoaded={!loadingGetCourse}>*/}
-			{/*			<Select*/}
-			{/*				items={dataGetCourse ?? []}*/}
-			{/*				label="Curso"*/}
-			{/*				id={field.name}*/}
-			{/*				onChange={field.onChange}*/}
-			{/*				name={field.name}*/}
-			{/*				selectedKeys={field.value ? [field.value] : new Set([])}*/}
-			{/*				variant="bordered"*/}
-			{/*				color="primary"*/}
-			{/*				isInvalid={!!error}*/}
-			{/*				isRequired*/}
-			{/*				errorMessage={error?.message}*/}
-			{/*				classNames={{*/}
-			{/*					value: "text-foreground",*/}
-			{/*				}}*/}
-			{/*			>*/}
-			{/*				{(course) => (*/}
-			{/*					<SelectItem key={course.id} value={course.id}>*/}
-			{/*						{course.name}*/}
-			{/*					</SelectItem>*/}
-			{/*				)}*/}
-			{/*			</Select>*/}
-			{/*		</Skeleton>*/}
-			{/*	)}*/}
-			{/*/>*/}
+
 			<DialogFooter>
 				<DialogClose asChild>
 					<Button variant="outline">Cancel</Button>

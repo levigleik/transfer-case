@@ -114,7 +114,10 @@ export default function TableVehicle() {
 
 									<TabsContents className="flex-1 overflow-y-auto">
 										<TabsContent value="account" className="space-y-5 p-6">
-											<Form vehicle={editingVehicle} />
+											<Form
+												vehicle={editingVehicle}
+												setIsModalOpen={setIsEditModalOpen}
+											/>
 										</TabsContent>
 										<TabsContent value="password" className="space-y-6 p-6">
 											<p className="text-sm text-muted-foreground">

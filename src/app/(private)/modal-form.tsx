@@ -25,7 +25,7 @@ export function ModalForm({ open, setOpen, children }: ModalFormProps) {
 				</Button>
 			</DialogTrigger>
 			<DialogContent
-				className="p-0 rounded-xl overflow-hidden gap-0 focus-visible:outline-none sm:max-w-2xl
+				className="p-0 rounded-xl overflow-hidden gap-0 focus-visible:outline-none sm:max-w-4xl
         flex flex-col max-h-[90vh]"
 			>
 				<div className="flex items-center gap-3 p-6 flex-shrink-0">
@@ -39,7 +39,6 @@ export function ModalForm({ open, setOpen, children }: ModalFormProps) {
 						</DialogDescription>
 					</DialogHeader>
 				</div>
-
 				{children}
 			</DialogContent>
 		</Dialog>

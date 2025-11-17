@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import type { DeleteData, GetData, PostData, PutData } from "@/types/models";
@@ -78,13 +79,17 @@ export const deleteData = async <TReturn>(val: DeleteData) => {
 /**
  * Função para tratar erros de requisições e exibir mensagens no toast.
  * Parâmetros:
- * - error: erro retornado pela requisição
+ * - error: erro retornado pela requisição {error: string; message: string; statusCode: number}
  * - message: mensagem personalizada opcional
  */
-export const toastErrorsApi = (error: any, message?: string) => {
+export const toastErrorsApi = (
+	error: AxiosError<{ error: string; message: string; statusCode: number }>,
+	message?: string,
+) => {
+	console.error(error);
 	if (error?.response) {
 		if (message) return toast.error(message);
-		if (error.response?.data?.msg)
-			return toast.error(error.response?.data?.msg);
+		if (error.response?.data?.message)
+			return toast.error(error.response?.data?.message);
 	} else toast.error("Erro ao se comunicar com o servidor (erro desconhecido)");
 };
