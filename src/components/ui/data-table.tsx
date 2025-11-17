@@ -242,7 +242,7 @@ export function DataTable<TData, TValue>({
 					"[&_tr:not(:last-child)_td]:border-b [&_tr]:border-none",
 				)}
 			>
-				<TableHeader className="sticky top-0 z-10 rounded-t-xl">
+				<TableHeader className="sticky top-0 z-10 rounded-t-xl backdrop-blur-xs">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow
 							key={headerGroup.id}
