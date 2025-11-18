@@ -18,17 +18,11 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-// ... (outros imports)
-
 type ComboboxOption = {
 	value: string;
 	label: string;
 };
 
-// 1. Atualize a interface de Props.
-//    Usamos Omit<React.ButtonHTMLAttributes... para herdar
-//    todas as props de um <button> (como onBlur, disabled, aria-invalid)
-//    exceto 'onChange' e 'value', que estamos tratando manualmente.
 export interface ComboboxProps
 	extends Omit<
 		React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -36,13 +30,12 @@ export interface ComboboxProps
 	> {
 	options: ComboboxOption[];
 	value: string;
-	onChange: (value: string) => void; // Nossa prop onChange aceita apenas o valor
+	onChange: (value: string) => void;
 	placeholder?: string;
 	searchPlaceholder?: string;
 	emptyText?: string;
 }
 
-// 2. Use React.forwardRef para que o react-hook-form possa anexar uma ref
 export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
 	(
 		{
@@ -70,8 +63,8 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
 						role="combobox"
 						aria-expanded={open}
 						className={cn("w-[200px] justify-between", className)}
-						ref={ref} // 4. Passe a ref para o Button
-						{...props} // 5. Passe as props restantes (onBlur, aria-invalid) para o Button
+						ref={ref}
+						{...props}
 					>
 						{value ? selectedLabel : placeholder}
 						<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

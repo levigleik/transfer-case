@@ -1,27 +1,23 @@
 import { z } from "zod";
-import type {
-	BrandType,
-	CategoryType,
-	ClassificationType,
-	CompanyType,
-	StatusType,
-} from "@/types/models";
-
-import { VehicleSchema, type VehicleType } from "@/types/models";
-
-export type VehicleData = VehicleType & {
-	classification: ClassificationType;
-	category: CategoryType;
-	brand: BrandType;
-	company: CompanyType;
-	status: StatusType;
-};
+import { VehicleSchema } from "@/types/models";
 
 const VehicleBaseSchema = VehicleSchema.omit({
 	id: true,
 	createdAt: true,
 	updatedAt: true,
 });
+
+export const ImageValueSchema = z
+	.object({
+		id: z.string(),
+		file: z.instanceof(File).optional(),
+		// pode ser URL normal ou data URL (data:image/png;base64,...)
+		url: z.string().min(1).optional(),
+		name: z.string().optional(),
+	})
+	.refine((data) => data.file || data.url, {
+		message: "É necessário ter pelo menos 'file' ou 'url'.",
+	});
 
 export const VehiclePayloadSchema = VehicleBaseSchema.extend({
 	capacity: z.coerce.number(),
@@ -33,9 +29,9 @@ export const VehiclePayloadSchema = VehicleBaseSchema.extend({
 	companyId: z.coerce.number(),
 	statusId: z.coerce.number(),
 	review: z.coerce.number(),
-});
 
-export type VehiclePayload = z.infer<typeof VehiclePayloadSchema>;
+	photos: z.array(z.string()).optional(),
+});
 
 export const VehicleFormSchema = VehicleBaseSchema.extend({
 	identifier: z.string().min(1, "Identificador é obrigatório"),
@@ -54,6 +50,6 @@ export const VehicleFormSchema = VehicleBaseSchema.extend({
 	renavam: z.string().min(1, "Renavam é obrigatório"),
 	chassi: z.string().min(1, "Chassi é obrigatório"),
 	uf: z.string().length(2, "UF inválida"),
-});
 
-export type VehicleForm = z.infer<typeof VehicleFormSchema>;
+	photos: z.array(ImageValueSchema).default([]).optional(),
+});

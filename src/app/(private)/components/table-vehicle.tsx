@@ -9,9 +9,9 @@ import {
 	RotateCw,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Form } from "@/app/(private)/components/form";
+import { FormVehicleData } from "@/app/(private)/components/form-vehicle-data";
 import { ModalForm } from "@/app/(private)/components/modal-form";
-import type { VehicleData } from "@/app/(private)/utils/validation";
+import type { VehicleData } from "@/app/(private)/utils/types";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Card } from "@/components/ui/card";
@@ -117,10 +117,31 @@ export default function TableVehicle() {
 											<ImageIcon />
 											Imagens
 										</TabsTrigger>
+										<TabsTrigger
+											value="documentation"
+											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
+										>
+											<ImageIcon />
+											Documentação
+										</TabsTrigger>
+										<TabsTrigger
+											value="gas-supply"
+											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
+										>
+											<ImageIcon />
+											Abastecimento
+										</TabsTrigger>
+										<TabsTrigger
+											value="occurrency"
+											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
+										>
+											<ImageIcon />
+											Ocorrência
+										</TabsTrigger>
 									</TabsList>
 									<TabsContents className="flex-1 overflow-y-auto">
 										<TabsContent value="general-data" className="space-y-5 p-6">
-											<Form
+											<FormVehicleData
 												vehicle={editingVehicle}
 												setIsModalOpen={setIsEditModalOpen}
 											/>
@@ -130,20 +151,10 @@ export default function TableVehicle() {
 												Change your password here. After saving, you&apos;ll be
 												logged out.
 											</p>
-											<div className="space-y-3">
-												<div className="space-y-1">
-													<Label htmlFor="current">Current password</Label>
-													<Input id="current" type="password" />
-												</div>
-												<div className="space-y-1">
-													<Label htmlFor="new">New password</Label>
-													<Input id="new" type="password" />
-												</div>
-												<div className="space-y-1">
-													<Label htmlFor="confirm">Confirm password</Label>
-													<Input id="confirm" type="password" />
-												</div>
-											</div>
+											{/*<FormVehicleImages*/}
+											{/*	vehicle={editingVehicle}*/}
+											{/*	setIsModalOpen={setIsEditModalOpen}*/}
+											{/*/>*/}
 											<Button>Save password</Button>
 										</TabsContent>
 									</TabsContents>

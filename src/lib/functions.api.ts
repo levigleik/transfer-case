@@ -38,7 +38,14 @@ export const getData = async <TReturn>(val: GetData) => {
 export const postData = async <TReturn, TForm>(val: PostData<TForm>) => {
 	const { url, data: dataForm, signal } = val;
 
-	const { data } = await api.post<TReturn>(url, dataForm, { signal });
+	const isFormData =
+		typeof FormData !== "undefined" && dataForm instanceof FormData;
+	const dataRequest = isFormData ? dataForm : JSON.stringify(dataForm);
+
+	const { data } = await api.post<TReturn>(url, dataRequest, {
+		signal,
+		headers: isFormData ? {} : { "Content-Type": "application/json" },
+	});
 	return data;
 };
 

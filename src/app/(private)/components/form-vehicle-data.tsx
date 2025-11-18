@@ -1,17 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useVehicleFormOptions } from "@/app/(private)/hooks/use-vehicle-form-options";
+import type {
+	ImageValue,
+	VehicleData,
+	VehicleForm,
+	VehiclePayload,
+} from "@/app/(private)/utils/types";
 import {
-	type VehicleData,
-	type VehicleForm,
 	VehicleFormSchema,
-	type VehiclePayload,
 	VehiclePayloadSchema,
 } from "@/app/(private)/utils/validation";
 import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/ui/combobox";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
 	Field,
@@ -20,84 +22,83 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { FormSelect } from "@/components/ui/form-select";
+import { ImagePreviewGrid } from "@/components/ui/image-preview-grid";
 import { Input } from "@/components/ui/input";
+import { InputImage } from "@/components/ui/input-image";
 import { InputNumber } from "@/components/ui/input-number";
-import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import {
-	getData,
-	postData,
-	putData,
-	toastErrorsApi,
-} from "@/lib/functions.api";
-import {
-	type PlateType,
-	PlateTypeSchema,
-} from "@/types/enums/PlateType.schema";
-import type {
-	BrandType,
-	CompanyType,
-	PostData,
-	PutData,
-	StatusType,
-	VehicleType,
-} from "@/types/models";
+import { postData, putData, toastErrorsApi } from "@/lib/functions.api";
+import type { PlateType } from "@/types/enums/PlateType.schema";
+import type { PostData, PutData, VehicleType } from "@/types/models";
 
 interface FormProps {
 	setIsModalOpen: (open: boolean) => void;
 	vehicle?: VehicleData;
 }
 
-export function Form({ vehicle, setIsModalOpen }: FormProps) {
+export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
 	const queryClient = useQueryClient();
-	const { handleSubmit, setValue, control, reset, register } =
-		useForm<VehicleForm>({
-			resolver: zodResolver(VehicleFormSchema),
-			defaultValues: vehicle
-				? {
-						identifier: vehicle.identifier,
-						model: vehicle.model,
-						year: vehicle.year,
-						capacity: String(vehicle.capacity),
-						doors: String(vehicle.doors),
-						uf: vehicle.uf,
-						plateType: vehicle.plateType,
-						plate: vehicle.plate,
-						renavam: vehicle.renavam,
-						chassi: vehicle.chassi,
-						review: String(vehicle.review),
-						description: vehicle.description,
-						photos: vehicle.photos,
-						gasId: String(vehicle.gasId),
-						brandId: String(vehicle.brandId),
-						classificationId: String(vehicle.classificationId),
-						categoryId: String(vehicle.categoryId),
-						companyId: String(vehicle.companyId),
-						statusId: String(vehicle.statusId),
-					}
-				: {
-						identifier: "",
-						model: "",
-						year: "",
-						capacity: "0",
-						doors: "0",
-						uf: "",
-						plateType: "MERCOSUL" as PlateType,
-						plate: "",
-						renavam: "",
-						chassi: "",
-						review: "0",
-						description: "",
-						photos: [],
-						gasId: "",
-						brandId: "",
-						classificationId: "",
-						categoryId: "",
-						companyId: "",
-						statusId: "",
-					},
-		});
+	const { handleSubmit, control, reset } = useForm<VehicleForm>({
+		resolver: zodResolver(VehicleFormSchema),
+		defaultValues: vehicle
+			? {
+					identifier: vehicle.identifier,
+					model: vehicle.model,
+					year: vehicle.year,
+					capacity: String(vehicle.capacity),
+					doors: String(vehicle.doors),
+					uf: vehicle.uf,
+					plateType: vehicle.plateType,
+					plate: vehicle.plate,
+					renavam: vehicle.renavam,
+					chassi: vehicle.chassi,
+					review: String(vehicle.review),
+					description: vehicle.description,
+					gasId: String(vehicle.gasId),
+					brandId: String(vehicle.brandId),
+					classificationId: String(vehicle.classificationId),
+					categoryId: String(vehicle.categoryId),
+					companyId: String(vehicle.companyId),
+					statusId: String(vehicle.statusId),
+					photos:
+						vehicle.photos?.map((photo: string) => ({
+							id: String(photo ?? crypto.randomUUID()),
+							url: photo,
+							name: photo ?? undefined,
+						})) ?? [],
+				}
+			: {
+					identifier: "",
+					model: "",
+					year: "",
+					capacity: "0",
+					doors: "0",
+					uf: "",
+					plateType: "MERCOSUL" as PlateType,
+					plate: "",
+					renavam: "",
+					chassi: "",
+					review: "0",
+					description: "",
+					gasId: "",
+					brandId: "",
+					classificationId: "",
+					categoryId: "",
+					companyId: "",
+					statusId: "",
+					photos: [],
+				},
+	});
+
+	const { mutateAsync: mutateUploadPhotos } = useMutation({
+		mutationFn: async (params: { id: number; formData: FormData }) =>
+			postData<VehicleType, FormData>({
+				url: `/vehicle/${params.id}/photos`,
+				data: params.formData,
+			}),
+		mutationKey: ["vehicle-upload-photos"],
+	});
 
 	const { mutateAsync: mutatePostVehicle, isPending: isLoadingPostVehicle } =
 		useMutation({
@@ -131,36 +132,57 @@ export function Form({ vehicle, setIsModalOpen }: FormProps) {
 		toast.error("Por favor, corrija os erros no formulário.");
 	};
 
-	const onSubmit = (data: VehicleForm) => {
+	const onSubmit = async (data: VehicleForm) => {
 		try {
-			const parseData = VehiclePayloadSchema.parse(data);
+			console.log("data", data);
+			const payloadInput = {
+				...data,
+				photos: [],
+			};
+
+			let savedVehicle: VehicleType;
+
+			const parseData = VehiclePayloadSchema.parse(payloadInput);
+
 			if (!vehicle) {
-				mutatePostVehicle({
+				savedVehicle = await mutatePostVehicle({
 					url: "/vehicle",
 					data: parseData,
-				})
-					.then(() => {
-						toast.success("Veículo cadastrado com sucesso");
-						setIsModalOpen(false);
-						queryClient.invalidateQueries({ queryKey: ["vehicle-get"] });
-						reset();
-					})
-					.catch((error) => {
-						toastErrorsApi(error);
-					});
+				});
 			} else {
-				mutatePutVehicle({
+				// UPDATE
+				savedVehicle = await mutatePutVehicle({
 					url: "/vehicle",
+					id: Number(vehicle.id),
 					data: parseData,
-					id: Number(vehicle?.id),
-				})
-					.then(() => {
-						toast.success("Veículo atualizado com sucesso");
-					})
-					.catch((err) => {
-						toastErrorsApi(err);
-					});
+				});
 			}
+
+			const hasNewFiles = data.photos?.some((img) => !!img.file) ?? false;
+
+			if (hasNewFiles) {
+				const formData = new FormData();
+
+				for (const img of data.photos ?? []) {
+					if (img.file) {
+						formData.append("photos", img.file);
+					}
+				}
+
+				await mutateUploadPhotos({
+					id: savedVehicle.id,
+					formData,
+				});
+			}
+
+			toast.success(
+				vehicle
+					? "Veículo atualizado com sucesso"
+					: "Veículo cadastrado com sucesso",
+			);
+			setIsModalOpen(false);
+			queryClient.invalidateQueries({ queryKey: ["vehicle-get"] });
+			reset();
 		} catch (error) {
 			console.error("Erro ao parsear dados para API:", error);
 			toast.error("Erro interno ao processar formulário.");
@@ -592,6 +614,40 @@ export function Form({ vehicle, setIsModalOpen }: FormProps) {
 						</Field>
 					)
 				}
+			/>
+			<Controller
+				name="photos"
+				control={control}
+				render={({ field, fieldState }) => {
+					const images: ImageValue[] = field.value ?? [];
+
+					return (
+						<Field data-invalid={fieldState.invalid} className="md:col-span-2">
+							<FieldLabel htmlFor={field.name}>Fotos</FieldLabel>
+
+							<InputImage
+								id={field.name}
+								name={field.name}
+								value={images}
+								onChange={field.onChange}
+								ref={field.ref}
+								aria-invalid={fieldState.invalid}
+								maxFiles={10} // opcional
+							/>
+
+							<ImagePreviewGrid
+								images={images}
+								onRemove={(id) => {
+									const next = images.filter((img) => img.id !== id);
+									field.onChange(next);
+								}}
+								className="mt-3"
+							/>
+
+							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+						</Field>
+					);
+				}}
 			/>
 
 			<DialogFooter>
