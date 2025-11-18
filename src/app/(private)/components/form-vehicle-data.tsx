@@ -600,7 +600,7 @@ export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
 					) : (
 						<Field data-invalid={fieldState.invalid}>
 							<FieldLabel htmlFor="form-rhf-demo-description">
-								Description
+								Descrição
 							</FieldLabel>
 							<Textarea
 								{...field}
@@ -623,7 +623,7 @@ export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
 
 					return (
 						<Field data-invalid={fieldState.invalid} className="md:col-span-2">
-							<FieldLabel htmlFor={field.name}>Fotos</FieldLabel>
+							<FieldLabel htmlFor={field.name}>Imagens</FieldLabel>
 
 							<InputImage
 								id={field.name}
@@ -654,7 +654,11 @@ export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
 				<DialogClose asChild>
 					<Button variant="outline">Cancel</Button>
 				</DialogClose>
-				<Button type="submit">Save changes</Button>
+				{loading ? (
+					<Skeleton className="rounded-md w-full h-8" />
+				) : (
+					<Button type="submit">Save changes</Button>
+				)}
 			</DialogFooter>
 		</form>
 	);

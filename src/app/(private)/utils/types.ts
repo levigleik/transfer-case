@@ -1,8 +1,8 @@
-import { z } from "zod";
-import {
+import type { z } from "zod";
+import type {
 	ImageValueSchema,
-	type VehicleFormSchema,
-	type VehiclePayloadSchema,
+	VehicleFormSchema,
+	VehiclePayloadSchema,
 } from "@/app/(private)/utils/validation";
 import type {
 	BrandType,
@@ -25,9 +25,3 @@ export type VehicleData = VehicleType & {
 	company: CompanyType;
 	status: StatusType;
 };
-
-export const VehicleFormImagesSchema = z.object({
-	photos: z.array(ImageValueSchema).optional(),
-});
-
-export type VehicleFormImages = z.infer<typeof VehicleFormImagesSchema>;

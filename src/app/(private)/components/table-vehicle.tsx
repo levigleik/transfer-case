@@ -4,9 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import {
 	ChevronDown,
 	CloudDownload,
+	FileText,
+	Fuel,
 	ImageIcon,
 	Info,
 	RotateCw,
+	TriangleAlert,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { FormVehicleData } from "@/app/(private)/components/form-vehicle-data";
@@ -111,31 +114,24 @@ export default function TableVehicle() {
 											Dados gerais
 										</TabsTrigger>
 										<TabsTrigger
-											value="images"
-											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
-										>
-											<ImageIcon />
-											Imagens
-										</TabsTrigger>
-										<TabsTrigger
 											value="documentation"
 											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
 										>
-											<ImageIcon />
+											<FileText />
 											Documentação
 										</TabsTrigger>
 										<TabsTrigger
 											value="gas-supply"
 											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
 										>
-											<ImageIcon />
+											<Fuel />
 											Abastecimento
 										</TabsTrigger>
 										<TabsTrigger
 											value="occurrency"
 											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
 										>
-											<ImageIcon />
+											<TriangleAlert />
 											Ocorrência
 										</TabsTrigger>
 									</TabsList>
