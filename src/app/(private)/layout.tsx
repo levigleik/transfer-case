@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
+import { VehicleFormProvider } from "@/app/(private)/context/vehicle-context";
 import { AppNavbar } from "@/components/navbar/app-navbar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 export default async function Layout({
 	children,
@@ -17,10 +19,17 @@ export default async function Layout({
 			<AppSidebar variant="inset" />
 			<SidebarInset>
 				<div className="@container/main min-[56rem]:overflow-y-auto">
-					<header className="sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 rounded-t-xl border-b bg-background/90 backdrop-blur-xs transition-[width,height] ease-linear">
+					<header
+						className={cn(
+							"sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2",
+							"rounded-t-xl border-b bg-background/90 backdrop-blur-xs transition-[width,height] ease-linear",
+						)}
+					>
 						<AppNavbar />
 					</header>
-					<div className="flex flex-col p-6">{children}</div>
+					<VehicleFormProvider>
+						<div className="flex flex-col p-6">{children}</div>
+					</VehicleFormProvider>
 				</div>
 			</SidebarInset>
 		</SidebarProvider>

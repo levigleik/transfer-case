@@ -55,12 +55,10 @@ function ImagePreviewItem({ image, onRemove }: ImagePreviewItemProps) {
 
 	return (
 		<div className="group relative aspect-square overflow-hidden rounded-md border bg-muted">
-			<Image
+			<img
 				src={objectUrl}
 				alt={image.name ?? "Preview da imagem"}
 				className="h-full w-full object-cover"
-				width={300}
-				height={200}
 			/>
 
 			{onRemove && (

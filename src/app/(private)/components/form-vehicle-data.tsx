@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import { useVehicleFormOptions } from "@/app/(private)/hooks/use-vehicle-form-options";
 import type {
 	ImageValue,
@@ -28,67 +29,76 @@ import { InputImage } from "@/components/ui/input-image";
 import { InputNumber } from "@/components/ui/input-number";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import api from "@/lib/api";
 import { postData, putData, toastErrorsApi } from "@/lib/functions.api";
 import type { PlateType } from "@/types/enums/PlateType.schema";
 import type { PostData, PutData, VehicleType } from "@/types/models";
 
-interface FormProps {
-	setIsModalOpen: (open: boolean) => void;
-	vehicle?: VehicleData;
-}
+export function FormVehicleData() {
+	const { setTabPanel, editingVehicle, setEditingVehicle } =
+		useVehicleFormContext();
 
-export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
-	const queryClient = useQueryClient();
-	const { handleSubmit, control, reset } = useForm<VehicleForm>({
+	const buildDefaultValues = (vehicle?: VehicleData): VehicleForm => {
+		if (!vehicle) {
+			return {
+				identifier: "",
+				model: "",
+				year: "",
+				capacity: "0",
+				doors: "0",
+				uf: "",
+				plateType: "MERCOSUL" as PlateType,
+				plate: "",
+				renavam: "",
+				chassi: "",
+				review: "0",
+				description: "",
+				gasId: "",
+				brandId: "",
+				classificationId: "",
+				categoryId: "",
+				companyId: "",
+				statusId: "",
+				photos: [],
+			};
+		}
+
+		return {
+			identifier: vehicle.identifier ?? "",
+			model: vehicle.model ?? "",
+			year: vehicle.year ?? "",
+			capacity: String(vehicle.capacity ?? "0"),
+			doors: String(vehicle.doors ?? "0"),
+			uf: vehicle.uf ?? "",
+			plateType: (vehicle.plateType ?? "MERCOSUL") as PlateType,
+			plate: vehicle.plate ?? "",
+			renavam: vehicle.renavam ?? "",
+			chassi: vehicle.chassi ?? "",
+			review: String(vehicle.review ?? "0"),
+			description: vehicle.description ?? "",
+			gasId: String(vehicle.gasId ?? ""),
+			brandId: String(vehicle.brandId ?? ""),
+			classificationId: String(vehicle.classificationId ?? ""),
+			categoryId: String(vehicle.categoryId ?? ""),
+			companyId: String(vehicle.companyId ?? ""),
+			statusId: String(vehicle.statusId ?? ""),
+			photos:
+				vehicle.photos?.map((photo: string) => ({
+					id: String(photo ?? crypto.randomUUID()),
+					url: api.getUri() + photo,
+					name: photo ?? undefined,
+				})) ?? [],
+		};
+	};
+
+	const {
+		handleSubmit,
+		control,
+		reset,
+		formState: { isDirty },
+	} = useForm<VehicleForm>({
 		resolver: zodResolver(VehicleFormSchema),
-		defaultValues: vehicle
-			? {
-					identifier: vehicle.identifier,
-					model: vehicle.model,
-					year: vehicle.year,
-					capacity: String(vehicle.capacity),
-					doors: String(vehicle.doors),
-					uf: vehicle.uf,
-					plateType: vehicle.plateType,
-					plate: vehicle.plate,
-					renavam: vehicle.renavam,
-					chassi: vehicle.chassi,
-					review: String(vehicle.review),
-					description: vehicle.description,
-					gasId: String(vehicle.gasId),
-					brandId: String(vehicle.brandId),
-					classificationId: String(vehicle.classificationId),
-					categoryId: String(vehicle.categoryId),
-					companyId: String(vehicle.companyId),
-					statusId: String(vehicle.statusId),
-					photos:
-						vehicle.photos?.map((photo: string) => ({
-							id: String(photo ?? crypto.randomUUID()),
-							url: photo,
-							name: photo ?? undefined,
-						})) ?? [],
-				}
-			: {
-					identifier: "",
-					model: "",
-					year: "",
-					capacity: "0",
-					doors: "0",
-					uf: "",
-					plateType: "MERCOSUL" as PlateType,
-					plate: "",
-					renavam: "",
-					chassi: "",
-					review: "0",
-					description: "",
-					gasId: "",
-					brandId: "",
-					classificationId: "",
-					categoryId: "",
-					companyId: "",
-					statusId: "",
-					photos: [],
-				},
+		defaultValues: buildDefaultValues(editingVehicle),
 	});
 
 	const { mutateAsync: mutateUploadPhotos } = useMutation({
@@ -134,17 +144,16 @@ export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
 
 	const onSubmit = async (data: VehicleForm) => {
 		try {
-			console.log("data", data);
-			const payloadInput = {
-				...data,
-				photos: [],
-			};
-
 			let savedVehicle: VehicleType;
 
-			const parseData = VehiclePayloadSchema.parse(payloadInput);
+			if (!isDirty && editingVehicle) {
+				setTabPanel("documentation");
+				return;
+			}
 
-			if (!vehicle) {
+			const parseData = VehiclePayloadSchema.parse({ ...data, photos: [] });
+
+			if (!editingVehicle) {
 				savedVehicle = await mutatePostVehicle({
 					url: "/vehicle",
 					data: parseData,
@@ -153,7 +162,7 @@ export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
 				// UPDATE
 				savedVehicle = await mutatePutVehicle({
 					url: "/vehicle",
-					id: Number(vehicle.id),
+					id: Number(editingVehicle.id),
 					data: parseData,
 				});
 			}
@@ -169,23 +178,25 @@ export function FormVehicleData({ vehicle, setIsModalOpen }: FormProps) {
 					}
 				}
 
-				await mutateUploadPhotos({
+				savedVehicle = await mutateUploadPhotos({
 					id: savedVehicle.id,
 					formData,
 				});
 			}
 
+			setEditingVehicle(savedVehicle as any);
+
+			const normalized = buildDefaultValues(savedVehicle as any);
+
+			reset(normalized);
 			toast.success(
-				vehicle
+				editingVehicle
 					? "Veículo atualizado com sucesso"
 					: "Veículo cadastrado com sucesso",
 			);
-			setIsModalOpen(false);
-			queryClient.invalidateQueries({ queryKey: ["vehicle-get"] });
-			reset();
-		} catch (error) {
-			console.error("Erro ao parsear dados para API:", error);
-			toast.error("Erro interno ao processar formulário.");
+			setTabPanel("documentation");
+		} catch (error: any) {
+			toastErrorsApi(error);
 		}
 	};
 	return (

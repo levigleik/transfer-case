@@ -14,6 +14,7 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { FormVehicleData } from "@/app/(private)/components/form-vehicle-data";
 import { ModalForm } from "@/app/(private)/components/modal-form";
+import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import type { VehicleData } from "@/app/(private)/utils/types";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -34,26 +35,33 @@ import { cn } from "@/lib/utils";
 import { getVehicleColumns, type VehicleColumnActions } from "./columns";
 
 export default function TableVehicle() {
-	// 1. Defina o estado para o modal
-	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-	const [editingVehicle, setEditingVehicle] = useState<VehicleData>();
+	const {
+		isModalOpen,
+		setIsModalOpen,
+		tabPanel,
+		setTabPanel,
+		setEditingVehicle,
+	} = useVehicleFormContext();
 
-	const handleOpenEditModal = useCallback((vehicle: VehicleData) => {
-		setEditingVehicle(vehicle);
-		setIsEditModalOpen(true);
-	}, []);
+	const openEditModal = useCallback(
+		(vehicle: VehicleData) => {
+			setEditingVehicle(vehicle);
+			setTabPanel("general-data");
+			setIsModalOpen(true);
+		},
+		[setEditingVehicle, setTabPanel, setIsModalOpen],
+	);
 
 	const handleOpenDeleteModal = useCallback((vehicle: VehicleData) => {
-		// Lógica para confirmar a exclusão...
 		console.log("Deletar:", vehicle.id);
 	}, []);
 
 	const actions: VehicleColumnActions = useMemo(
 		() => ({
-			onEdit: handleOpenEditModal,
+			onEdit: openEditModal,
 			onDelete: handleOpenDeleteModal,
 		}),
-		[handleOpenEditModal, handleOpenDeleteModal],
+		[openEditModal, handleOpenDeleteModal],
 	);
 
 	const columns = useMemo(() => getVehicleColumns(actions), [actions]);
@@ -100,36 +108,55 @@ export default function TableVehicle() {
 								orientation="vertical"
 								className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
 							/>
-							<ModalForm open={isEditModalOpen} setOpen={setIsEditModalOpen}>
+							<ModalForm open={isModalOpen} setOpen={setIsModalOpen}>
 								<Tabs
 									defaultValue="general-data"
 									className="flex flex-col flex-1 overflow-hidden"
+									value={tabPanel as any}
+									onValueChange={setTabPanel as any}
 								>
-									<TabsList className="inline-flex w-fit items-center justify-center p-[3px] text-foreground h-auto gap-2 rounded-none bg-transparent px-6 py-1 flex-shrink-0">
+									<TabsList
+										className={cn(
+											"inline-flex w-fit items-center justify-center p-[3px] text-foreground",
+											"h-auto gap-2 rounded-none bg-transparent px-6 py-1 flex-shrink-0",
+										)}
+									>
 										<TabsTrigger
 											value="general-data"
-											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
+											className={cn(
+												"data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0",
+												"after:-mb-1.5 after:h-[3px] after:rounded-t",
+											)}
 										>
 											<Info />
 											Dados gerais
 										</TabsTrigger>
 										<TabsTrigger
 											value="documentation"
-											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
+											className={cn(
+												"data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0",
+												"after:-mb-1.5 after:h-[3px] after:rounded-t",
+											)}
 										>
 											<FileText />
 											Documentação
 										</TabsTrigger>
 										<TabsTrigger
 											value="gas-supply"
-											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
+											className={cn(
+												"data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0",
+												"after:-mb-1.5 after:h-[3px] after:rounded-t",
+											)}
 										>
 											<Fuel />
 											Abastecimento
 										</TabsTrigger>
 										<TabsTrigger
 											value="occurrency"
-											className="data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0 after:-mb-1.5 after:h-[3px] after:rounded-t"
+											className={cn(
+												"data-[state=active]:after:bg-primary after:absolute after:inset-x-0 after:bottom-0",
+												"after:-mb-1.5 after:h-[3px] after:rounded-t",
+											)}
 										>
 											<TriangleAlert />
 											Ocorrência
@@ -137,10 +164,7 @@ export default function TableVehicle() {
 									</TabsList>
 									<TabsContents className="flex-1 overflow-y-auto">
 										<TabsContent value="general-data" className="space-y-5 p-6">
-											<FormVehicleData
-												vehicle={editingVehicle}
-												setIsModalOpen={setIsEditModalOpen}
-											/>
+											<FormVehicleData />
 										</TabsContent>
 										<TabsContent value="images" className="space-y-6 p-6">
 											<p className="text-sm text-muted-foreground">
