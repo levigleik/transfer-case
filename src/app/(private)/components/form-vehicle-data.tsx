@@ -31,7 +31,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/api";
 import { postData, putData, toastErrorsApi } from "@/lib/functions.api";
-import type { PlateType } from "@/types/enums/PlateType.schema";
+import {
+	type PlateType,
+	PlateTypeSchema,
+} from "@/types/enums/PlateType.schema";
 import type { PostData, PutData, VehicleType } from "@/types/models";
 
 export function FormVehicleData() {
@@ -41,24 +44,24 @@ export function FormVehicleData() {
 	const buildDefaultValues = (vehicle?: VehicleData): VehicleForm => {
 		if (!vehicle) {
 			return {
-				identifier: "",
-				model: "",
-				year: "",
-				capacity: "0",
-				doors: "0",
-				uf: "",
+				identifier: "001",
+				model: "Buss Vista 340",
+				year: "2023",
+				capacity: "46",
+				doors: "1",
+				uf: "RJ",
 				plateType: "MERCOSUL" as PlateType,
-				plate: "",
-				renavam: "",
-				chassi: "",
+				plate: "SQX8A12",
+				renavam: "1365373352",
+				chassi: "9BD111060T5002156",
 				review: "0",
 				description: "",
-				gasId: "",
-				brandId: "",
-				classificationId: "",
-				categoryId: "",
-				companyId: "",
-				statusId: "",
+				gasId: "1",
+				brandId: "1",
+				classificationId: "1",
+				categoryId: "1",
+				companyId: "1",
+				statusId: "3",
 				photos: [],
 			};
 		}
@@ -133,6 +136,11 @@ export function FormVehicleData() {
 		gasOptions,
 		isLoadingOptions,
 	} = useVehicleFormOptions();
+
+	const plateTypeOptions = PlateTypeSchema.options.map((option) => ({
+		label: option,
+		value: option,
+	}));
 
 	const loading =
 		isLoadingPostVehicle || isLoadingPutVehicle || isLoadingOptions;
@@ -323,6 +331,8 @@ export function FormVehicleData() {
 									{...field}
 									aria-invalid={fieldState.invalid}
 									placeholder="2012"
+									maxLength={4}
+									minLength={4}
 								/>
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />
@@ -461,74 +471,6 @@ export function FormVehicleData() {
 			</FieldGroup>
 			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
 				<Controller
-					name="plate"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Placa</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="OCH1A34"
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="renavam"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Renavam</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="13248512471"
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="chassi"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field
-								data-invalid={fieldState.invalid}
-								className="md:col-span-2"
-							>
-								<FieldLabel htmlFor={field.name}>Chassi</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="9BD111060T5002156"
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
-				<Controller
 					name="uf"
 					control={control}
 					render={({ field, fieldState }) =>
@@ -541,6 +483,8 @@ export function FormVehicleData() {
 									{...field}
 									aria-invalid={fieldState.invalid}
 									placeholder="SP"
+									minLength={2}
+									maxLength={2}
 								/>
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />
@@ -579,10 +523,7 @@ export function FormVehicleData() {
 						loading ? (
 							<Skeleton className="rounded-md w-full h-10" />
 						) : (
-							<Field
-								data-invalid={fieldState.invalid}
-								className="md:col-span-2"
-							>
+							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Combustível</FieldLabel>
 								<FormSelect
 									value={field.value ?? ""}
@@ -593,6 +534,104 @@ export function FormVehicleData() {
 									placeholder="Selecione um combustível..."
 									className="w-full"
 									name={field.name}
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+				<Controller
+					name="plateType"
+					control={control}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-10" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Tipo de Placa</FieldLabel>
+								<FormSelect
+									value={field.value ?? ""}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+									aria-invalid={fieldState.invalid}
+									options={plateTypeOptions}
+									placeholder="Selecione um tipo..."
+									className="w-full"
+									name={field.name}
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+			</FieldGroup>
+			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
+				<Controller
+					name="plate"
+					control={control}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-8" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Placa</FieldLabel>
+								<Input
+									{...field}
+									aria-invalid={fieldState.invalid}
+									placeholder="OCH1A34"
+									minLength={7}
+									maxLength={8}
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+				<Controller
+					name="renavam"
+					control={control}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-8" />
+						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Renavam</FieldLabel>
+								<Input
+									{...field}
+									aria-invalid={fieldState.invalid}
+									placeholder="13248512471"
+									maxLength={11}
+									minLength={11}
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+				<Controller
+					name="chassi"
+					control={control}
+					render={({ field, fieldState }) =>
+						loading ? (
+							<Skeleton className="rounded-md w-full h-10" />
+						) : (
+							<Field
+								data-invalid={fieldState.invalid}
+								className="md:col-span-2"
+							>
+								<FieldLabel htmlFor={field.name}>Chassi</FieldLabel>
+								<Input
+									{...field}
+									aria-invalid={fieldState.invalid}
+									placeholder="9BD111060T5002156"
 								/>
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />

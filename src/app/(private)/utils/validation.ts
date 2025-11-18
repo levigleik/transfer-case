@@ -46,9 +46,9 @@ export const VehicleFormSchema = VehicleBaseSchema.extend({
 	review: z.string().min(1, "Revisão é obrigatória"),
 	model: z.string().min(1, "Modelo é obrigatório"),
 	year: z.string().length(4, "Ano deve ter 4 dígitos"),
-	plate: z.string().min(7, "Placa inválida"),
-	renavam: z.string().min(1, "Renavam é obrigatório"),
-	chassi: z.string().min(1, "Chassi é obrigatório"),
+	plate: z.string().min(7, "Placa inválida").max(8, "Placa inválida"),
+	renavam: z.string().length(11, "Renavam deve ter 11 dígitos"),
+	chassi: z.string().min(17, "Chassi é obrigatório"),
 	uf: z.string().length(2, "UF inválida"),
 
 	photos: z.array(ImageValueSchema).default([]).optional(),
