@@ -216,7 +216,7 @@ export const getVehicleColumns = (
 			const vehicle = row.original;
 
 			return (
-				<div className="md:opacity-0 md:group-hover/table:opacity-100 transition-opacity p-0 h-[calc(100%-2px)]">
+				<div className="md:opacity-0 md:group-hover/table:opacity-100 transition-opacity backdrop-blur-xs p-0 h-[calc(100%-2px)]">
 					<div className="flex items-center gap-2">
 						<Button
 							variant="ghost"
