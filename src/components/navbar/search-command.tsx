@@ -83,7 +83,7 @@ export function SearchCommand() {
 			<CommandDialog open={open} onOpenChange={setOpen}>
 				<CommandInput placeholder="Digite um comando para buscar..." />
 				<CommandList>
-					<CommandEmpty>No results found.</CommandEmpty>
+					<CommandEmpty>Nenhum resultado.</CommandEmpty>
 					<CommandGroup heading="Suggestions">
 						<CommandItem>
 							<Calendar />

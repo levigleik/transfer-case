@@ -348,8 +348,11 @@ export function DataTable<TData, TValue>({
 						))
 					) : (
 						<TableRow>
-							<TableCell colSpan={columns.length} className="h-24 text-center">
-								No results.
+							<TableCell
+								colSpan={columns.length}
+								className="p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center h-24 flex items-center justify-center w-full"
+							>
+								Nenhum registro encontrado
 							</TableCell>
 						</TableRow>
 					)}
