@@ -25,7 +25,7 @@ export const DocumentationPayloadSchema = DocumentationBaseSchema.extend({
 
 export const DocumentationFormSchema = DocumentationBaseSchema.extend({
 	type: z.string().min(1, "Tipo é obrigatório"),
-	expiryAt: z.string().min(1, "Vencimento é obrigatório"),
+	expiryAt: z.date("Vencimento é obrigatório"),
 	days: z.array(z.string()).optional(),
 	document: z.string(),
 	vehicleId: z.string(),

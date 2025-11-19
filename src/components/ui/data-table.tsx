@@ -239,7 +239,7 @@ export function DataTable<TData, TValue>({
 				className={cn(
 					"w-full caption-bottom text-sm relative grid border-separate",
 					"border-spacing-0 [&_td]:border-border [&_th]:border-border [&_th]:border-b",
-					"[&_tr:not(:last-child)_td]:border-b [&_tr]:border-none",
+					"[&_tr:not(:last-child)_td]:border-b [&_tr]:border-none cursor-grab select-none overscroll-x-contain scroll-smooth",
 				)}
 			>
 				<TableHeader className="sticky top-0 z-10 rounded-t-xl backdrop-blur-xs">

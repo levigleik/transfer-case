@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { BusFront, FileText, LucidePlus } from "lucide-react";
-import { useState } from "react";
+import { BookmarkIcon, FileText } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useDocumentationFormContext } from "@/app/(private)/context/documentation-context";
@@ -26,7 +25,6 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/components/ui/dialog";
 import {
 	Field,
@@ -34,8 +32,10 @@ import {
 	FieldGroup,
 	FieldLabel,
 } from "@/components/ui/field";
-import { FormMultiSelect } from "@/components/ui/form-multi-select";
+import { FormBooleanButton } from "@/components/ui/form-boolean-button";
+import { FormDatePicker } from "@/components/ui/form-date-picker";
 import { FormSelect } from "@/components/ui/form-select";
+import { FormToggleGroup } from "@/components/ui/form-toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { postData, putData, toastErrorsApi } from "@/lib/functions.api";
 import type { PostData, PutData } from "@/types/models";
@@ -54,8 +54,6 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 
 	const { setTabPanel } = useModalContext();
 
-	const [openModal, setOpenModal] = useState(false);
-
 	const buildDefaultValues = (
 		documentation?: DocumentationData,
 	): DocumentationForm => {
@@ -65,7 +63,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				type: "Tacógrafo",
 				anticipateRenewal: false,
 				document: "",
-				expiryAt: new Date().toISOString(),
+				expiryAt: new Date(),
 				vehicleId: "1",
 			};
 		}
@@ -75,7 +73,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 			type: documentation.type ?? "",
 			anticipateRenewal: documentation.anticipateRenewal,
 			document: documentation.document ?? "",
-			expiryAt: documentation.expiryAt ?? new Date().toISOString(),
+			expiryAt: new Date(documentation.expiryAt) ?? new Date(),
 			vehicleId: String(documentation.vehicleId) ?? "1",
 		};
 	};
@@ -131,7 +129,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 		"sex",
 		"sáb",
 	].map((day) => ({
-		label: day,
+		label: day.charAt(0).toUpperCase(),
 		value: day,
 	}));
 
@@ -155,6 +153,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 
 			const parseData = DocumentationPayloadSchema.parse({
 				...data,
+				expiryAt: data.expiryAt?.toISOString(),
 				// document: [],
 			});
 
@@ -172,17 +171,14 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				});
 			}
 
-			setEditingDocumentation(savedDocumentation as any);
-
-			const normalized = buildDefaultValues(savedDocumentation as any);
-
-			reset(normalized);
+			setEditingDocumentation(undefined);
+			reset();
 			toast.success(
 				editingDocumentation
-					? "Veículo atualizado com sucesso"
-					: "Veículo cadastrado com sucesso",
+					? "Documento atualizado com sucesso"
+					: "Documento cadastrado com sucesso",
 			);
-			setTabPanel("documentation");
+			setOpen(false);
 		} catch (error: any) {
 			toastErrorsApi(error);
 		}
@@ -210,7 +206,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 					onSubmit={handleSubmit(onSubmit, onErrors)}
 					className="flex w-full flex-col gap-4 p-6"
 				>
-					<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
+					<FieldGroup className="grid grid-cols-1 lg:grid-cols-8 gap-4">
 						<Controller
 							name="days"
 							control={control}
@@ -218,17 +214,20 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 								loading ? (
 									<Skeleton className="rounded-md w-full h-8" />
 								) : (
-									<Field data-invalid={fieldState.invalid}>
+									<Field
+										data-invalid={fieldState.invalid}
+										className="col-span-3"
+									>
 										<FieldLabel htmlFor={field.name}>Dias</FieldLabel>
-										<FormMultiSelect
-											values={field.value}
-											onValuesChange={field.onChange}
+										<FormToggleGroup
+											id={field.name}
+											value={field.value}
+											onChange={field.onChange}
 											onBlur={field.onBlur}
 											aria-invalid={fieldState.invalid}
 											options={daysOfWeekOptions}
-											placeholder="Selecione um tipo..."
 											className="w-full"
-											name={field.name}
+											type="multiple"
 										/>
 
 										{fieldState.invalid && (
@@ -245,9 +244,13 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 								loading ? (
 									<Skeleton className="rounded-md w-full h-10" />
 								) : (
-									<Field data-invalid={fieldState.invalid}>
+									<Field
+										data-invalid={fieldState.invalid}
+										className="col-span-3 lg:col-span-2"
+									>
 										<FieldLabel htmlFor={field.name}>Tipo</FieldLabel>
 										<FormSelect
+											id={field.name}
 											value={field.value ?? ""}
 											onChange={field.onChange}
 											onBlur={field.onBlur}
@@ -261,6 +264,73 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 										{fieldState.invalid && (
 											<FieldError errors={[fieldState.error]} />
 										)}
+									</Field>
+								)
+							}
+						/>
+						<Controller
+							name="expiryAt"
+							control={control}
+							render={({ field, fieldState }) =>
+								loading ? (
+									<Skeleton className="rounded-md w-full h-10" />
+								) : (
+									<Field
+										data-invalid={fieldState.invalid}
+										className="col-span-2"
+									>
+										<FieldLabel htmlFor={field.name}>Tipo</FieldLabel>
+										<FormDatePicker
+											id={field.name}
+											value={field.value ?? ""}
+											onChange={field.onChange}
+											onBlur={field.onBlur}
+											aria-invalid={fieldState.invalid}
+											placeholder="15/05/2026"
+											className="w-full"
+											name={field.name}
+										/>
+
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)
+							}
+						/>
+						<Controller
+							name="anticipateRenewal"
+							control={control}
+							render={({ field, fieldState }) =>
+								loading ? (
+									<Skeleton className="rounded-md w-full h-10" />
+								) : (
+									<Field
+										// orientation="horizontal"
+										data-invalid={fieldState.invalid}
+									>
+										<FieldLabel htmlFor={field.name}>Antecipação</FieldLabel>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+										<FormBooleanButton
+											id={field.name}
+											value={field.value}
+											onChange={field.onChange}
+											onBlur={field.onBlur}
+											aria-invalid={fieldState.invalid}
+											className="w-full"
+										>
+											<BookmarkIcon />
+											Bookmark
+										</FormBooleanButton>
+										{/*<Switch*/}
+										{/*	id={field.name}*/}
+										{/*	name={field.name}*/}
+										{/*	checked={field.value}*/}
+										{/*	onCheckedChange={field.onChange}*/}
+										{/*	aria-invalid={fieldState.invalid}*/}
+										{/*/>*/}
 									</Field>
 								)
 							}

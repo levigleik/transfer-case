@@ -222,7 +222,7 @@ export function FormVehicleData() {
 			onSubmit={handleSubmit(onSubmit, onErrors)}
 			className="flex w-full flex-col gap-4"
 		>
-			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
 				<Controller
 					name="identifier"
 					control={control}
@@ -232,7 +232,7 @@ export function FormVehicleData() {
 						) : (
 							<Field
 								data-invalid={fieldState.invalid}
-								className="md:col-span-2"
+								className="lg:col-span-2"
 							>
 								<FieldLabel htmlFor={field.name}>Identificador</FieldLabel>
 								<Input
@@ -304,7 +304,7 @@ export function FormVehicleData() {
 					}
 				/>
 			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
 				<Controller
 					name="model"
 					control={control}
@@ -314,7 +314,7 @@ export function FormVehicleData() {
 						) : (
 							<Field
 								data-invalid={fieldState.invalid}
-								className="md:col-span-2"
+								className="lg:col-span-2"
 							>
 								<FieldLabel htmlFor={field.name}>Modelo</FieldLabel>
 								<Input
@@ -381,7 +381,7 @@ export function FormVehicleData() {
 					}
 				/>
 			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
 				<Controller
 					name="capacity"
 					control={control}
@@ -483,7 +483,7 @@ export function FormVehicleData() {
 					}
 				/>
 			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
 				<Controller
 					name="uf"
 					control={control}
@@ -585,7 +585,7 @@ export function FormVehicleData() {
 					}
 				/>
 			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
 				<Controller
 					name="plate"
 					control={control}
@@ -641,7 +641,7 @@ export function FormVehicleData() {
 						) : (
 							<Field
 								data-invalid={fieldState.invalid}
-								className="md:col-span-2"
+								className="lg:col-span-2"
 							>
 								<FieldLabel htmlFor={field.name}>Chassi</FieldLabel>
 								<Input
@@ -688,7 +688,7 @@ export function FormVehicleData() {
 					const images: ImageValue[] = field.value ?? [];
 
 					return (
-						<Field data-invalid={fieldState.invalid} className="md:col-span-2">
+						<Field data-invalid={fieldState.invalid} className="lg:col-span-2">
 							<FieldLabel htmlFor={field.name}>Imagens</FieldLabel>
 
 							<InputImage

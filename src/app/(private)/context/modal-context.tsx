@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 import { type ReactNode, useCallback } from "react";
+import { useDocumentationFormContext } from "@/app/(private)/context/documentation-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
 
@@ -21,6 +22,7 @@ const ModalContext = React.createContext<ModalContextValue | undefined>(
 export function ModalProvider({ children }: { children: ReactNode }) {
 	const queryClient = useQueryClient();
 	const { setEditingVehicle } = useVehicleFormContext();
+	const { setEditingDocumentation } = useDocumentationFormContext();
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 
 	const [tabPanel, setTabPanel] = React.useState("general-data");
@@ -38,11 +40,12 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 			setIsModalOpen(open);
 			if (!open) {
 				setEditingVehicle(undefined);
+				setEditingDocumentation(undefined);
 				setTabPanel("general-data");
 				queryClient.invalidateQueries({ queryKey: ["vehicle-get"] });
 			}
 		},
-		[queryClient, setEditingVehicle],
+		[queryClient, setEditingVehicle, setEditingDocumentation],
 	);
 
 	const value = React.useMemo(

@@ -30,9 +30,10 @@ export default function TabsVehicle() {
 	const handleTabChange = (newValue: string) => {
 		if (!editingVehicle?.id && newValue !== "general-data") {
 			toast.error("Adicione os dados gerais do veículo antes de continuar.");
+		} else {
+			scrollToTab(newValue);
+			setTabPanel(newValue as any);
 		}
-		scrollToTab(newValue);
-		setTabPanel(newValue as any);
 	};
 
 	useEffect(() => {

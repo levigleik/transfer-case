@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { type QueryClientConfig, useQuery } from "@tanstack/react-query";
 import { getData } from "@/lib/functions.api";
 import type {
 	BrandType,
@@ -33,28 +33,31 @@ const createOptionsMapper = <T extends Record<string, any>>(
 };
 
 export function useVehicleFormOptions() {
+	const queryConfig = {
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+	} as QueryClientConfig;
+
 	const { data: statusOptions, isLoading: isLoadingStatus } = useQuery({
 		queryKey: ["status-get"],
 		queryFn: ({ signal }) => getData<StatusType[]>({ url: "status", signal }),
 		select: createOptionsMapper("id", "name"),
-		refetchOnMount: false,
-		refetchOnReconnect: false,
+		...queryConfig,
 	});
 
 	const { data: companyOptions, isLoading: isLoadingCompany } = useQuery({
 		queryKey: ["company-get"],
 		queryFn: ({ signal }) => getData<CompanyType[]>({ url: "company", signal }),
 		select: createOptionsMapper("id", "name"),
-		refetchOnMount: false,
-		refetchOnReconnect: false,
+		...queryConfig,
 	});
 
 	const { data: brandOptions, isLoading: isLoadingBrand } = useQuery({
 		queryKey: ["brand-get"],
 		queryFn: ({ signal }) => getData<BrandType[]>({ url: "brand", signal }),
 		select: createOptionsMapper("id", "name"),
-		refetchOnMount: false,
-		refetchOnReconnect: false,
+		...queryConfig,
 	});
 
 	const { data: categoryOptions, isLoading: isLoadingCategory } = useQuery({
@@ -62,8 +65,7 @@ export function useVehicleFormOptions() {
 		queryFn: ({ signal }) =>
 			getData<CategoryType[]>({ url: "category", signal }),
 		select: createOptionsMapper("id", "name"),
-		refetchOnMount: false,
-		refetchOnReconnect: false,
+		...queryConfig,
 	});
 
 	const { data: classificationOptions, isLoading: isLoadingClassification } =
@@ -72,16 +74,14 @@ export function useVehicleFormOptions() {
 			queryFn: ({ signal }) =>
 				getData<ClassificationType[]>({ url: "classification", signal }),
 			select: createOptionsMapper("id", "description"),
-			refetchOnMount: false,
-			refetchOnReconnect: false,
+			...queryConfig,
 		});
 
 	const { data: gasOptions, isLoading: isLoadingGas } = useQuery({
 		queryKey: ["gas-get"],
 		queryFn: ({ signal }) => getData<GasType[]>({ url: "gas", signal }),
 		select: createOptionsMapper("id", "type"),
-		refetchOnMount: false,
-		refetchOnReconnect: false,
+		...queryConfig,
 	});
 
 	const isLoading =

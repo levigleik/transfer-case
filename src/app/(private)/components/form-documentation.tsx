@@ -3,10 +3,7 @@ import { useState } from "react";
 import { ModalFormDocumentation } from "@/app/(private)/components/modal-form-documentation";
 import { useModalContext } from "@/app/(private)/context/modal-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
-import type { DocumentationForm } from "@/app/(private)/utils/types-documentation";
 import { Button } from "@/components/ui/button";
-import { DialogClose, DialogFooter } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function FormDocumentation() {
 	const { editingVehicle } = useVehicleFormContext();

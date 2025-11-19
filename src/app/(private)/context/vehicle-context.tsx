@@ -6,7 +6,7 @@ import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
 
 type VehicleFormContextValue = {
 	editingVehicle?: VehicleData;
-	setEditingVehicle: (v?: VehicleData) => void;
+	setEditingVehicle: (vehicle?: VehicleData) => void;
 };
 
 const VehicleFormContext = React.createContext<

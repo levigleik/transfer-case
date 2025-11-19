@@ -6,7 +6,7 @@ import type { DocumentationData } from "@/app/(private)/utils/types-documentatio
 
 type DocumentationFormContextValue = {
 	editingDocumentation?: DocumentationData;
-	setEditingDocumentation: (v?: DocumentationData) => void;
+	setEditingDocumentation: (documentation?: DocumentationData) => void;
 };
 
 const DocumentationFormContext = React.createContext<
