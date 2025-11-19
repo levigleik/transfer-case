@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useModalContext } from "@/app/(private)/context/modal-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import { useVehicleFormOptions } from "@/app/(private)/hooks/use-vehicle-form-options";
 import type {
@@ -9,11 +10,11 @@ import type {
 	VehicleData,
 	VehicleForm,
 	VehiclePayload,
-} from "@/app/(private)/utils/types";
+} from "@/app/(private)/utils/types-vehicle";
 import {
 	VehicleFormSchema,
 	VehiclePayloadSchema,
-} from "@/app/(private)/utils/validation";
+} from "@/app/(private)/utils/validation-vehicle";
 import { Button } from "@/components/ui/button";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
@@ -38,8 +39,9 @@ import {
 import type { PostData, PutData, VehicleType } from "@/types/models";
 
 export function FormVehicleData() {
-	const { setTabPanel, editingVehicle, setEditingVehicle } =
-		useVehicleFormContext();
+	const { editingVehicle, setEditingVehicle } = useVehicleFormContext();
+
+	const { setTabPanel } = useModalContext();
 
 	const buildDefaultValues = (vehicle?: VehicleData): VehicleForm => {
 		if (!vehicle) {
@@ -52,7 +54,7 @@ export function FormVehicleData() {
 				uf: "RJ",
 				plateType: "MERCOSUL" as PlateType,
 				plate: "SQX8A12",
-				renavam: "1365373352",
+				renavam: "13653733521",
 				chassi: "9BD111060T5002156",
 				review: "0",
 				description: "",
@@ -159,7 +161,10 @@ export function FormVehicleData() {
 				return;
 			}
 
-			const parseData = VehiclePayloadSchema.parse({ ...data, photos: [] });
+			const parseData = VehiclePayloadSchema.parse({
+				...data,
+				photos: undefined,
+			});
 
 			if (!editingVehicle) {
 				savedVehicle = await mutatePostVehicle({
@@ -175,7 +180,8 @@ export function FormVehicleData() {
 				});
 			}
 
-			const hasNewFiles = data.photos?.some((img) => !!img.file) ?? false;
+			const hasNewFiles =
+				data.photos?.some((img: ImageValue) => !!img.file) ?? false;
 
 			if (hasNewFiles) {
 				const formData = new FormData();
@@ -204,6 +210,7 @@ export function FormVehicleData() {
 			);
 			setTabPanel("documentation");
 		} catch (error: any) {
+			console.log(data);
 			toastErrorsApi(error);
 		}
 	};

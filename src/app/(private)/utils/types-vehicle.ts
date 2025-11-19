@@ -3,7 +3,7 @@ import type {
 	ImageValueSchema,
 	VehicleFormSchema,
 	VehiclePayloadSchema,
-} from "@/app/(private)/utils/validation";
+} from "@/app/(private)/utils/validation-vehicle";
 import type {
 	BrandType,
 	CategoryType,
@@ -24,4 +24,5 @@ export type VehicleData = VehicleType & {
 	brand: BrandType;
 	company: CompanyType;
 	status: StatusType;
+	documentations?: DocumentType[];
 };

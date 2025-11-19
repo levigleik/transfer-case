@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
-import { VehicleFormProvider } from "@/app/(private)/context/vehicle-context";
 import { AppNavbar } from "@/components/navbar/app-navbar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import Providers from "./providers";
 
 export default async function Layout({
 	children,
@@ -27,9 +27,9 @@ export default async function Layout({
 					>
 						<AppNavbar />
 					</header>
-					<VehicleFormProvider>
+					<Providers>
 						<div className="flex flex-col p-6">{children}</div>
-					</VehicleFormProvider>
+					</Providers>
 				</div>
 			</SidebarInset>
 		</SidebarProvider>
