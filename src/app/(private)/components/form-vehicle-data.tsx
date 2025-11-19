@@ -257,6 +257,7 @@ export function FormVehicleData() {
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Companhia</FieldLabel>
 								<FormSelect
+									id={field.name}
 									value={field.value ?? ""}
 									onChange={field.onChange}
 									onBlur={field.onBlur}
@@ -284,6 +285,7 @@ export function FormVehicleData() {
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Status</FieldLabel>
 								<FormSelect
+									id={field.name}
 									value={field.value ?? ""}
 									onChange={field.onChange}
 									onBlur={field.onBlur}
@@ -360,6 +362,7 @@ export function FormVehicleData() {
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Marca</FieldLabel>
 								<FormSelect
+									id={field.name}
 									value={field.value ?? ""}
 									onChange={field.onChange}
 									onBlur={field.onBlur}
@@ -433,6 +436,7 @@ export function FormVehicleData() {
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Categoria</FieldLabel>
 								<FormSelect
+									id={field.name}
 									value={field.value ?? ""}
 									onChange={field.onChange}
 									onBlur={field.onBlur}
@@ -460,6 +464,7 @@ export function FormVehicleData() {
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Classificação</FieldLabel>
 								<FormSelect
+									id={field.name}
 									value={field.value ?? ""}
 									onChange={field.onChange}
 									onBlur={field.onBlur}
@@ -535,6 +540,7 @@ export function FormVehicleData() {
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Combustível</FieldLabel>
 								<FormSelect
+									id={field.name}
 									value={field.value ?? ""}
 									onChange={field.onChange}
 									onBlur={field.onBlur}
@@ -561,6 +567,7 @@ export function FormVehicleData() {
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor={field.name}>Tipo de Placa</FieldLabel>
 								<FormSelect
+									id={field.name}
 									value={field.value ?? ""}
 									onChange={field.onChange}
 									onBlur={field.onBlur}
