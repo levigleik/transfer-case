@@ -319,8 +319,9 @@ export function DataTable<TData, TValue>({
 											key={cell.id}
 											data-pinned={isPinned ? pinSide : undefined}
 											data-last-col={isLastPinned ? pinSide : undefined}
+											title={String(cell.getValue())}
 											className={cn(
-												"px-3",
+												"px-3 overflow-hidden text-ellipsis",
 												"flex items-center [&[data-pinned=left][data-last-col=left]]:border-r",
 												"[&[data-pinned][data-last-col]]:border-border",
 												// "data-pinned:backdrop-blur-xs",
