@@ -13,10 +13,14 @@ import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
+import { DataTableToolbar } from "@/components/ui/data-table-toolbar";
 import { Separator } from "@/components/ui/separator";
 import { getData } from "@/lib/functions.api";
 import { cn } from "@/lib/utils";
-import { getVehicleColumns, type VehicleColumnActions } from "./columns";
+import {
+	getVehicleColumns,
+	type VehicleColumnActions,
+} from "./columns-table-vehicle";
 
 export default function TableVehicle() {
 	const { setEditingVehicle } = useVehicleFormContext();
@@ -77,6 +81,7 @@ export default function TableVehicle() {
 					columns={columns}
 					loading={isLoading}
 					data={data ?? []}
+					topLeftActions={(table) => <DataTableToolbar table={table} />}
 					topRightActions={
 						<div className="flex items-center gap-2">
 							<Button variant="outline">

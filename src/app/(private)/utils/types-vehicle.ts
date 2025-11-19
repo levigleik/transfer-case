@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
 import type {
 	ImageValueSchema,
 	VehicleFormSchema,
@@ -24,5 +25,5 @@ export type VehicleData = VehicleType & {
 	brand: BrandType;
 	company: CompanyType;
 	status: StatusType;
-	documentations?: DocumentType[];
+	documentations?: DocumentationData[];
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import type { Table as TanstackTable } from "@tanstack/react-table";
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
@@ -16,29 +17,13 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import {
-	Bot,
-	ChevronDown,
 	ChevronFirstIcon,
 	ChevronLastIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
-	CloudDownload,
-	Filter,
-	LucidePlus,
-	RotateCw,
-	Search,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { RiOpenaiFill } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
-import { Input } from "@/components/ui/input";
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from "@/components/ui/input-group";
 import {
 	Pagination,
 	PaginationContent,
@@ -51,7 +36,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
@@ -61,11 +45,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
@@ -76,6 +55,9 @@ interface DataTableProps<TData, TValue> {
 		rowsPerPage?: number[];
 	};
 	loading?: boolean;
+	topLeftActions?:
+		| React.ReactNode
+		| ((table: TanstackTable<TData>) => React.ReactNode);
 	topRightActions?: React.ReactNode;
 }
 
@@ -83,6 +65,7 @@ export function DataTable<TData, TValue>({
 	columns,
 	data,
 	paginationProps,
+	topLeftActions,
 	topRightActions,
 	loading = false,
 }: DataTableProps<TData, TValue>) {
@@ -153,88 +136,22 @@ export function DataTable<TData, TValue>({
 		},
 	});
 
-	const facetedFilters = useMemo(
-		() =>
-			table
-				.getAllColumns()
-				.filter((column) => column.columnDef?.meta?.filterable),
-		[table],
-	);
+	const resolvedLeftActions =
+		typeof topLeftActions === "function"
+			? topLeftActions(table)
+			: topLeftActions;
+
+	const hasActions = resolvedLeftActions || topRightActions;
 
 	return (
 		<>
-			<div className="flex h-full border-b items-center py-4 justify-between gap-4 px-5">
-				<div className="flex items-center gap-2">
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								size="icon"
-								className={cn(
-									"cursor-pointer w-10 h-9 relative overflow-hidden",
-									"before:absolute before:inset-0 before:rounded-[inherit] before:bg-[length:250%_250%,100%_100%]",
-									"before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)]",
-									"before:bg-[position:200%_0,0_0] before:bg-no-repeat before:transition-[background-position_0s_ease]",
-									"before:duration-1000 hover:before:bg-[position:-100%_0,0_0]",
-									"dark:before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.2)_50%,transparent_75%,transparent_100%)]",
-								)}
-							>
-								<Bot />
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent
-							sideOffset={12}
-							side="bottom"
-							align="start"
-							className={cn(
-								"bg-primary text-primary-foreground w-[310px] text-wrap",
-								"dark:bg-primary dark:text-primary-foreground",
-								"rounded-md border p-4 shadow-md outline-hidden",
-							)}
-						>
-							<div className="flex items-start gap-4">
-								<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white">
-									<RiOpenaiFill size={24} />
-								</div>
-								<div className="space-y-1 font-normal">
-									<p className="font-medium text-sm">@passAI</p>
-									<p className="text-sm">
-										Use the AI assistant to generate reports directly from your
-										dashboard.
-									</p>
-									<p className="text-xs">Powered by PASS — © 2025</p>
-								</div>
-							</div>
-						</TooltipContent>
-					</Tooltip>
-					<Separator
-						orientation="vertical"
-						className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
-					/>
-					<InputGroup className="w-52">
-						<InputGroupInput
-							// placeholder={placeholderText}
-							placeholder="Buscar..."
-							value={globalFilter ?? ""}
-							onChange={(event) => setGlobalFilter(event.target.value)}
-							className="max-w-sm"
-						/>
-						<InputGroupAddon>
-							<Search />
-						</InputGroupAddon>
-					</InputGroup>
-					{facetedFilters.map((column) => {
-						const meta = column.columnDef.meta;
-						return (
-							<DataTableFacetedFilter
-								key={column.id}
-								column={column}
-								title={meta?.filterTitle || column.id}
-							/>
-						);
-					})}
+			{hasActions ? (
+				<div className="flex h-full border-b items-center py-4 justify-between gap-4 px-5">
+					{resolvedLeftActions}
+					{topRightActions}
 				</div>
-				{topRightActions}
-			</div>
+			) : null}
+
 			<Table
 				className={cn(
 					"w-full caption-bottom text-sm relative grid border-separate",
