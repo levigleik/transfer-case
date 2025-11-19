@@ -15,7 +15,7 @@ type ModalFormProps = {
 	children?: React.ReactNode;
 };
 
-export function ModalForm({ open, setOpen, children }: ModalFormProps) {
+export function ModalTableVehicle({ open, setOpen, children }: ModalFormProps) {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
