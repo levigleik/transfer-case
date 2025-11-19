@@ -17,6 +17,7 @@ export const documentationTypes = [
 	"Apólice RCTR-C",
 	"Laudo de Aferição",
 ];
+
 export type DocumentationData = Omit<DocumentationType, "expiryAt"> & {
 	expiryAt: string;
 };

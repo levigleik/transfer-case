@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText, Fuel, Info, TriangleAlert } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { FormDocumentation } from "@/app/(private)/components/form-documentation";
 import { FormVehicleData } from "@/app/(private)/components/form-vehicle-data";

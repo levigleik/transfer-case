@@ -2,11 +2,11 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import type { DocumentationType } from "@/types/models";
+import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
 
 type DocumentationFormContextValue = {
-	editingDocumentations?: DocumentationType[];
-	setEditingDocumentations: (v?: DocumentationType[]) => void;
+	editingDocumentation?: DocumentationData;
+	setEditingDocumentation: (v?: DocumentationData) => void;
 };
 
 const DocumentationFormContext = React.createContext<
@@ -18,16 +18,16 @@ export function DocumentationFormProvider({
 }: {
 	children: ReactNode;
 }) {
-	const [editingDocumentations, setEditingDocumentations] = React.useState<
-		DocumentationType[] | undefined
+	const [editingDocumentation, setEditingDocumentation] = React.useState<
+		DocumentationData | undefined
 	>(undefined);
 
 	const value = React.useMemo(
 		() => ({
-			editingDocumentations,
-			setEditingDocumentations,
+			editingDocumentation,
+			setEditingDocumentation,
 		}),
-		[editingDocumentations],
+		[editingDocumentation],
 	);
 
 	return (

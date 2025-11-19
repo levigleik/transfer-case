@@ -47,7 +47,7 @@ type ModalFormProps = {
 };
 
 export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
-	const { editingDocumentations, setEditingDocumentations } =
+	const { editingDocumentation, setEditingDocumentation } =
 		useDocumentationFormContext();
 
 	const { editingVehicle } = useVehicleFormContext();
@@ -71,7 +71,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 		}
 
 		return {
-			days: documentation.days ?? "",
+			days: documentation.days ?? [],
 			type: documentation.type ?? "",
 			anticipateRenewal: documentation.anticipateRenewal,
 			document: documentation.document ?? "",
@@ -87,15 +87,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 		formState: { isDirty },
 	} = useForm<DocumentationForm>({
 		resolver: zodResolver(DocumentationFormSchema),
-		// defaultValues: buildDefaultValues(editingDocumentations),
-		defaultValues: {
-			expiryAt: new Date().toISOString(),
-			document: "",
-			vehicleId: "2",
-			days: [],
-			type: "",
-			anticipateRenewal: true,
-		},
+		defaultValues: buildDefaultValues(editingDocumentation),
 	});
 
 	const { mutateAsync: mutateUploadPhotos } = useMutation({
@@ -155,7 +147,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 		try {
 			let savedDocumentation: DocumentationData;
 
-			if (!isDirty && editingDocumentations) {
+			if (!isDirty && editingDocumentation) {
 				setTabPanel("documentation");
 				return;
 			}
@@ -166,7 +158,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				// document: [],
 			});
 
-			if (!editingDocumentations) {
+			if (!editingDocumentation) {
 				savedDocumentation = await mutatePostDocumentation({
 					url: "/documentation",
 					data: parseData,
@@ -175,18 +167,18 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				// UPDATE
 				savedDocumentation = await mutatePutDocumentation({
 					url: "/documentation",
-					id: Number(editingDocumentations[0].id),
+					id: Number(editingDocumentation.id),
 					data: parseData,
 				});
 			}
 
-			setEditingDocumentations(savedDocumentation as any);
+			setEditingDocumentation(savedDocumentation as any);
 
 			const normalized = buildDefaultValues(savedDocumentation as any);
 
 			reset(normalized);
 			toast.success(
-				editingDocumentations
+				editingDocumentation
 					? "Veículo atualizado com sucesso"
 					: "Veículo cadastrado com sucesso",
 			);
