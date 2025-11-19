@@ -1,8 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, CloudDownload, RotateCw } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { ModalDeleteVehicle } from "@/app/(private)/components/modal-delete-vehicle";
 import { ModalTableVehicle } from "@/app/(private)/components/modal-table-vehicle";
 import TabsVehicle from "@/app/(private)/components/tabs-vehicle";
 import { useModalContext } from "@/app/(private)/context/modal-context";
@@ -19,20 +20,27 @@ import { getVehicleColumns, type VehicleColumnActions } from "./columns";
 
 export default function TableVehicle() {
 	const { setEditingVehicle } = useVehicleFormContext();
-	const { isModalOpen, setIsModalOpen, setTabPanel } = useModalContext();
+	const { isModalEditOpen, setIsModalEditOpen, setTabPanel } =
+		useModalContext();
+
+	const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
 
 	const openEditModal = useCallback(
 		(vehicle: VehicleData) => {
 			setEditingVehicle(vehicle);
 			setTabPanel("general-data");
-			setIsModalOpen(true);
+			setIsModalEditOpen(true);
 		},
-		[setEditingVehicle, setTabPanel, setIsModalOpen],
+		[setEditingVehicle, setTabPanel, setIsModalEditOpen],
 	);
 
-	const handleOpenDeleteModal = useCallback((vehicle: VehicleData) => {
-		console.log("Deletar:", vehicle.id);
-	}, []);
+	const handleOpenDeleteModal = useCallback(
+		(vehicle?: VehicleData) => {
+			setEditingVehicle(vehicle);
+			setIsModalDeleteOpen(true);
+		},
+		[setEditingVehicle],
+	);
 
 	const actions: VehicleColumnActions = useMemo(
 		() => ({
@@ -88,9 +96,16 @@ export default function TableVehicle() {
 								orientation="vertical"
 								className="data-[orientation=vertical]:w-px data-[orientation=vertical]:h-4 mx-0.5"
 							/>
-							<ModalTableVehicle open={isModalOpen} setOpen={setIsModalOpen}>
+							<ModalTableVehicle
+								open={isModalEditOpen}
+								setOpen={setIsModalEditOpen}
+							>
 								<TabsVehicle />
 							</ModalTableVehicle>
+							<ModalDeleteVehicle
+								open={isModalDeleteOpen}
+								setOpen={setIsModalDeleteOpen}
+							/>
 						</div>
 					}
 				/>

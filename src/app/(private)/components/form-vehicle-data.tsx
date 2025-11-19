@@ -212,7 +212,6 @@ export function FormVehicleData() {
 			);
 			setTabPanel("documentation");
 		} catch (error: any) {
-			console.log(data);
 			toastErrorsApi(error);
 		}
 	};

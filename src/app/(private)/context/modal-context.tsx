@@ -8,8 +8,8 @@ import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
 
 type ModalContextValue = {
-	isModalOpen: boolean;
-	setIsModalOpen: (open: boolean) => void;
+	isModalEditOpen: boolean;
+	setIsModalEditOpen: (open: boolean) => void;
 	openWithVehicle: (vehicle?: VehicleData) => void;
 	tabPanel: string;
 	setTabPanel: (value: string) => void;
@@ -23,26 +23,26 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 	const queryClient = useQueryClient();
 	const { setEditingVehicle } = useVehicleFormContext();
 	const { setEditingDocumentation } = useDocumentationFormContext();
-	const [isModalOpen, setIsModalOpen] = React.useState(false);
+	const [isModalEditOpen, setIsModalEditOpen] = React.useState(false);
 
 	const [tabPanel, setTabPanel] = React.useState("general-data");
 
 	const openWithVehicle = React.useCallback(
 		(vehicle?: VehicleData) => {
 			setEditingVehicle(vehicle);
-			setIsModalOpen(true);
+			setIsModalEditOpen(true);
 		},
 		[setEditingVehicle],
 	);
 
 	const _setIsModalOpen = useCallback(
-		(open: boolean) => {
-			setIsModalOpen(open);
+		async (open: boolean) => {
+			setIsModalEditOpen(open);
 			if (!open) {
 				setEditingVehicle(undefined);
 				setEditingDocumentation(undefined);
 				setTabPanel("general-data");
-				queryClient.invalidateQueries({ queryKey: ["vehicle-get"] });
+				await queryClient.invalidateQueries({ queryKey: ["vehicle-get"] });
 			}
 		},
 		[queryClient, setEditingVehicle, setEditingDocumentation],
@@ -50,13 +50,13 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
 	const value = React.useMemo(
 		() => ({
-			isModalOpen,
-			setIsModalOpen: _setIsModalOpen,
+			isModalEditOpen,
+			setIsModalEditOpen: _setIsModalOpen,
 			openWithVehicle,
 			tabPanel,
 			setTabPanel,
 		}),
-		[isModalOpen, openWithVehicle, tabPanel, _setIsModalOpen],
+		[isModalEditOpen, openWithVehicle, tabPanel, _setIsModalOpen],
 	);
 
 	return (

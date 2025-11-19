@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { BookmarkIcon, FileText } from "lucide-react";
@@ -137,7 +139,6 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	// const loading = true;
 
 	const onErrors = (err: any) => {
-		console.log(err);
 		toast.error("Por favor, corrija os erros no formulário.");
 	};
 
