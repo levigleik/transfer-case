@@ -236,7 +236,11 @@ export function DataTable<TData, TValue>({
 											key={cell.id}
 											data-pinned={isPinned ? pinSide : undefined}
 											data-last-col={isLastPinned ? pinSide : undefined}
-											title={String(cell.getValue())}
+											title={
+												typeof cell.getValue() === "string"
+													? String(cell.getValue())
+													: undefined
+											}
 											className={cn(
 												"px-3 overflow-hidden text-ellipsis",
 												"flex items-center [&[data-pinned=left][data-last-col=left]]:border-r",
