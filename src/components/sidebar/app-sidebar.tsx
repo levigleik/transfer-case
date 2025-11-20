@@ -16,7 +16,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<TeamSwitcher teams={navbarItems.teams} />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavItems data={navbarItems.principal} groupLabel="Principal" />
+				<NavItems
+					data={navbarItems.principal}
+					groupLabel="Principal"
+					// className="group-data-[collapsible=icon]:hidden"
+				/>
 				<NavItems data={navbarItems.services} groupLabel="Serviços" />
 				<NavItems data={navbarItems.comercial} groupLabel="Comercial" />
 				<NavItems data={navbarItems.compliments} groupLabel="Complementos" />

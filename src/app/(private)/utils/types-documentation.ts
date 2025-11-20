@@ -5,6 +5,7 @@ import type {
 	FileValueSchema,
 } from "@/app/(private)/utils/validation-documentation";
 import type { DocumentationType } from "@/types/models";
+import type { FileType } from "@/types/models/File.schema";
 
 export type DocumentationPayload = z.infer<typeof DocumentationPayloadSchema>;
 export type DocumentationForm = z.infer<typeof DocumentationFormSchema>;
@@ -20,4 +21,5 @@ export const documentationTypes = [
 
 export type DocumentationData = Omit<DocumentationType, "expiryAt"> & {
 	expiryAt: string;
+	file?: FileType;
 };

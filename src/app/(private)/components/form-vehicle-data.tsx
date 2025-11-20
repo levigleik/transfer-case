@@ -211,518 +211,526 @@ export function FormVehicleData() {
 					: "Veículo cadastrado com sucesso",
 			);
 			setTabPanel("documentation");
+			// const tabElement = document.getElementById("documentation");
+			// if (tabElement) {
+			// 	tabElement.scrollIntoView({ behavior: "smooth" });
+			// }
 		} catch (error: any) {
 			toastErrorsApi(error);
 		}
 	};
 	return (
-		<form
-			autoComplete="off"
-			onSubmit={handleSubmit(onSubmit, onErrors)}
-			className="flex w-full flex-col gap-4"
-		>
-			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+		<form autoComplete="off" onSubmit={handleSubmit(onSubmit, onErrors)}>
+			<div className="flex w-full flex-col gap-4 space-y-5 p-6">
+				<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+					<Controller
+						name="identifier"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field
+									data-invalid={fieldState.invalid}
+									className="lg:col-span-2"
+								>
+									<FieldLabel htmlFor={field.name}>Identificador</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="Transfer Paulo"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="companyId"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Companhia</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={companyOptions}
+										placeholder="Selecione uma companhia..."
+										className="w-full"
+										name={field.name}
+									/>
+
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="statusId"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Status</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={statusOptions}
+										placeholder="Selecione um status..."
+										className="w-full"
+										name={field.name}
+									/>
+
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+				</FieldGroup>
+				<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+					<Controller
+						name="model"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field
+									data-invalid={fieldState.invalid}
+									className="lg:col-span-2"
+								>
+									<FieldLabel htmlFor={field.name}>Modelo</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="Buss Vissta 340"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="year"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Ano</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="2012"
+										maxLength={4}
+										minLength={4}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="brandId"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Marca</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={brandOptions}
+										placeholder="Selecione uma marca..."
+										className="w-full"
+										name={field.name}
+									/>
+
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+				</FieldGroup>
+				<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+					<Controller
+						name="capacity"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Capacidade</FieldLabel>
+									<InputNumber
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="45"
+										value={Number(field.value)}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="doors"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Portas</FieldLabel>
+									<InputNumber
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="4"
+										value={Number(field.value)}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="categoryId"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Categoria</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={categoryOptions}
+										placeholder="Selecione uma categoria..."
+										className="w-full"
+										name={field.name}
+									/>
+
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="classificationId"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Classificação</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={classificationOptions}
+										placeholder="Selecione uma classificação..."
+										className="w-full "
+										name={field.name}
+									/>
+
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+				</FieldGroup>
+				<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+					<Controller
+						name="uf"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>UF</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="SP"
+										minLength={2}
+										maxLength={2}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="review"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Revisão</FieldLabel>
+									<InputNumber
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="2400"
+										decimalScale={3}
+										value={Number(field.value)}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="gasId"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Combustível</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={gasOptions}
+										placeholder="Selecione um combustível..."
+										className="w-full"
+										name={field.name}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="plateType"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Tipo de Placa</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={plateTypeOptions}
+										placeholder="Selecione um tipo..."
+										className="w-full"
+										name={field.name}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+				</FieldGroup>
+				<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+					<Controller
+						name="plate"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Placa</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="OCH1A34"
+										minLength={7}
+										maxLength={8}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="renavam"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-8" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Renavam</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="13248512471"
+										maxLength={11}
+										minLength={11}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<Controller
+						name="chassi"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field
+									data-invalid={fieldState.invalid}
+									className="lg:col-span-2"
+								>
+									<FieldLabel htmlFor={field.name}>Chassi</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										placeholder="9BD111060T5002156"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+				</FieldGroup>
 				<Controller
-					name="identifier"
+					name="description"
 					control={control}
 					render={({ field, fieldState }) =>
 						loading ? (
 							<Skeleton className="rounded-md w-full h-8" />
 						) : (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor="form-rhf-demo-description">
+									Descrição
+								</FieldLabel>
+								<Textarea
+									{...field}
+									placeholder="316"
+									rows={6}
+									className="min-h-24"
+									aria-invalid={fieldState.invalid}
+									value={field.value ?? ""} // parse para caso seja null
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)
+					}
+				/>
+				<Controller
+					name="photos"
+					control={control}
+					render={({ field, fieldState }) => {
+						const images: ImageValue[] = field.value ?? [];
+
+						return (
 							<Field
 								data-invalid={fieldState.invalid}
 								className="lg:col-span-2"
 							>
-								<FieldLabel htmlFor={field.name}>Identificador</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="Transfer Paulo"
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="companyId"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Companhia</FieldLabel>
-								<FormSelect
+								<FieldLabel htmlFor={field.name}>Imagens</FieldLabel>
+
+								<InputImage
 									id={field.name}
-									value={field.value ?? ""}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									aria-invalid={fieldState.invalid}
-									options={companyOptions}
-									placeholder="Selecione uma companhia..."
-									className="w-full"
 									name={field.name}
-								/>
-
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="statusId"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Status</FieldLabel>
-								<FormSelect
-									id={field.name}
-									value={field.value ?? ""}
+									value={images}
 									onChange={field.onChange}
-									onBlur={field.onBlur}
+									ref={field.ref}
 									aria-invalid={fieldState.invalid}
-									options={statusOptions}
-									placeholder="Selecione um status..."
-									className="w-full"
-									name={field.name}
+									maxFiles={10} // opcional
+								/>
+
+								<ImagePreviewGrid
+									images={images}
+									onRemove={(id) => {
+										const next = images.filter((img) => img.id !== id);
+										field.onChange(next);
+									}}
+									className="mt-3"
 								/>
 
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />
 								)}
 							</Field>
-						)
-					}
+						);
+					}}
 				/>
-			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-				<Controller
-					name="model"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field
-								data-invalid={fieldState.invalid}
-								className="lg:col-span-2"
-							>
-								<FieldLabel htmlFor={field.name}>Modelo</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="Buss Vissta 340"
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="year"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Ano</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="2012"
-									maxLength={4}
-									minLength={4}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="brandId"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Marca</FieldLabel>
-								<FormSelect
-									id={field.name}
-									value={field.value ?? ""}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									aria-invalid={fieldState.invalid}
-									options={brandOptions}
-									placeholder="Selecione uma marca..."
-									className="w-full"
-									name={field.name}
-								/>
-
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-				<Controller
-					name="capacity"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Capacidade</FieldLabel>
-								<InputNumber
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="45"
-									value={Number(field.value)}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="doors"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Portas</FieldLabel>
-								<InputNumber
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="4"
-									value={Number(field.value)}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="categoryId"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Categoria</FieldLabel>
-								<FormSelect
-									id={field.name}
-									value={field.value ?? ""}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									aria-invalid={fieldState.invalid}
-									options={categoryOptions}
-									placeholder="Selecione uma categoria..."
-									className="w-full"
-									name={field.name}
-								/>
-
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="classificationId"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Classificação</FieldLabel>
-								<FormSelect
-									id={field.name}
-									value={field.value ?? ""}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									aria-invalid={fieldState.invalid}
-									options={classificationOptions}
-									placeholder="Selecione uma classificação..."
-									className="w-full "
-									name={field.name}
-								/>
-
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-				<Controller
-					name="uf"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>UF</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="SP"
-									minLength={2}
-									maxLength={2}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="review"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Revisão</FieldLabel>
-								<InputNumber
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="2400"
-									decimalScale={3}
-									value={Number(field.value)}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="gasId"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Combustível</FieldLabel>
-								<FormSelect
-									id={field.name}
-									value={field.value ?? ""}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									aria-invalid={fieldState.invalid}
-									options={gasOptions}
-									placeholder="Selecione um combustível..."
-									className="w-full"
-									name={field.name}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="plateType"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Tipo de Placa</FieldLabel>
-								<FormSelect
-									id={field.name}
-									value={field.value ?? ""}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									aria-invalid={fieldState.invalid}
-									options={plateTypeOptions}
-									placeholder="Selecione um tipo..."
-									className="w-full"
-									name={field.name}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-			</FieldGroup>
-			<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-				<Controller
-					name="plate"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Placa</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="OCH1A34"
-									minLength={7}
-									maxLength={8}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="renavam"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-8" />
-						) : (
-							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Renavam</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="13248512471"
-									maxLength={11}
-									minLength={11}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-				<Controller
-					name="chassi"
-					control={control}
-					render={({ field, fieldState }) =>
-						loading ? (
-							<Skeleton className="rounded-md w-full h-10" />
-						) : (
-							<Field
-								data-invalid={fieldState.invalid}
-								className="lg:col-span-2"
-							>
-								<FieldLabel htmlFor={field.name}>Chassi</FieldLabel>
-								<Input
-									{...field}
-									aria-invalid={fieldState.invalid}
-									placeholder="9BD111060T5002156"
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)
-					}
-				/>
-			</FieldGroup>
-			<Controller
-				name="description"
-				control={control}
-				render={({ field, fieldState }) =>
-					loading ? (
-						<Skeleton className="rounded-md w-full h-8" />
-					) : (
-						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="form-rhf-demo-description">
-								Descrição
-							</FieldLabel>
-							<Textarea
-								{...field}
-								placeholder="316"
-								rows={6}
-								className="min-h-24"
-								aria-invalid={fieldState.invalid}
-								value={field.value ?? ""} // parse para caso seja null
-							/>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					)
-				}
-			/>
-			<Controller
-				name="photos"
-				control={control}
-				render={({ field, fieldState }) => {
-					const images: ImageValue[] = field.value ?? [];
-
-					return (
-						<Field data-invalid={fieldState.invalid} className="lg:col-span-2">
-							<FieldLabel htmlFor={field.name}>Imagens</FieldLabel>
-
-							<InputImage
-								id={field.name}
-								name={field.name}
-								value={images}
-								onChange={field.onChange}
-								ref={field.ref}
-								aria-invalid={fieldState.invalid}
-								maxFiles={10} // opcional
-							/>
-
-							<ImagePreviewGrid
-								images={images}
-								onRemove={(id) => {
-									const next = images.filter((img) => img.id !== id);
-									field.onChange(next);
-								}}
-								className="mt-3"
-							/>
-
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
-					);
-				}}
-			/>
-
-			<DialogFooter>
+			</div>
+			<DialogFooter className="flex gap-2 sm:flex-row sm:justify-end flex-row justify-between! border-t rounded-b-xl px-6 py-4">
 				<DialogClose asChild>
-					<Button variant="outline">Cancel</Button>
+					<Button variant="outline">Cancelar</Button>
 				</DialogClose>
 				{loading ? (
 					<Skeleton className="rounded-md w-full h-8" />
 				) : (
-					<Button type="submit">Save changes</Button>
+					<Button type="submit">Continuar</Button>
 				)}
 			</DialogFooter>
 		</form>

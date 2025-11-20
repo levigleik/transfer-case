@@ -11,7 +11,6 @@ import { useDocumentationFormContext } from "@/app/(private)/context/documentati
 import { useModalContext } from "@/app/(private)/context/modal-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
-import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { getData } from "@/lib/functions.api";
@@ -37,7 +36,7 @@ export function FormDocumentation() {
 			getData<DocumentationData[]>({
 				url: "/documentation",
 				signal,
-				query: `where.vehicleId=${vehicleId}`,
+				query: `where.vehicleId=${vehicleId}&&include.file=true`,
 			}),
 		enabled: !!vehicleId,
 	});

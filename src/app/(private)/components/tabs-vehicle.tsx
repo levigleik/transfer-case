@@ -100,11 +100,7 @@ export default function TabsVehicle() {
 				</TabsTrigger>
 			</TabsList>
 			<TabsContents className="flex-1 overflow-y-auto">
-				<TabsContent
-					value="general-data"
-					id="general-data"
-					className="space-y-5 p-6"
-				>
+				<TabsContent value="general-data" id="general-data">
 					<FormVehicleData />
 				</TabsContent>
 				<TabsContent

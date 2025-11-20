@@ -14,7 +14,9 @@ import {
 	type DocumentationForm,
 	type DocumentationPayload,
 	documentationTypes,
+	type FileValue,
 } from "@/app/(private)/utils/types-documentation";
+import type { ImageValue } from "@/app/(private)/utils/types-vehicle";
 import {
 	DocumentationFormSchema,
 	DocumentationPayloadSchema,
@@ -35,10 +37,12 @@ import {
 	FieldGroup,
 	FieldLabel,
 } from "@/components/ui/field";
+import { FilePreviewList } from "@/components/ui/file-preview-list";
 import { FormBooleanButton } from "@/components/ui/form-boolean-button";
 import { FormDatePicker } from "@/components/ui/form-date-picker";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormToggleGroup } from "@/components/ui/form-toggle-group";
+import { InputFile } from "@/components/ui/input-file";
 import { Skeleton } from "@/components/ui/skeleton";
 import { postData, putData, toastErrorsApi } from "@/lib/functions.api";
 import type { PostData, PutData } from "@/types/models";
@@ -66,7 +70,6 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				days: ["seg", "qua"],
 				type: "Tacógrafo",
 				anticipateRenewal: false,
-				document: "",
 				expiryAt: new Date(),
 				vehicleId: String(editingVehicle?.id),
 			};
@@ -94,13 +97,13 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 		defaultValues: buildDefaultValues(editingDocumentation),
 	});
 
-	const { mutateAsync: mutateUploadPhotos } = useMutation({
+	const { mutateAsync: mutateUploadDoc } = useMutation({
 		mutationFn: async (params: { id: number; formData: FormData }) =>
 			postData<DocumentationData, FormData>({
-				url: `/documentation/${params.id}/photos`,
+				url: `/documentation/${params.id}/docs`,
 				data: params.formData,
 			}),
-		mutationKey: ["documentation-upload-photos"],
+		mutationKey: ["documentation-upload-docs"],
 	});
 
 	const {
@@ -154,22 +157,43 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 			}
 			console.log(data);
 
+			let savedDocumentation: DocumentationData;
+
 			const parseData = DocumentationPayloadSchema.parse({
 				...data,
 				expiryAt: data.expiryAt?.toISOString(),
+				vehicleId: editingVehicle?.id,
 				// document: [],
 			});
 
 			if (!editingDocumentation) {
-				await mutatePostDocumentation({
+				savedDocumentation = await mutatePostDocumentation({
 					url: "/documentation",
 					data: parseData,
 				});
 			} else {
-				await mutatePutDocumentation({
+				savedDocumentation = await mutatePutDocumentation({
 					url: "/documentation",
 					id: Number(editingDocumentation.id),
 					data: parseData,
+				});
+			}
+
+			const hasNewFiles =
+				data.file?.some((doc: ImageValue) => !!doc.file) ?? false;
+
+			if (hasNewFiles) {
+				const formData = new FormData();
+
+				for (const doc of data.file ?? []) {
+					if (doc.file) {
+						formData.append("files", doc.file);
+					}
+				}
+
+				await mutateUploadDoc({
+					id: savedDocumentation.id,
+					formData,
 				});
 			}
 
@@ -193,16 +217,13 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 
 	useEffect(() => {
 		if (editingDocumentation) {
-			reset(
-				{
-					days: editingDocumentation.days ?? [],
-					type: editingDocumentation.type ?? "",
-					anticipateRenewal: editingDocumentation.anticipateRenewal,
-					document: editingDocumentation.document ?? "",
-					expiryAt: new Date(editingDocumentation.expiryAt) ?? new Date(),
-					vehicleId: String(editingDocumentation.vehicleId) ?? "",
-				},
-			);
+			reset({
+				days: editingDocumentation.days ?? [],
+				type: editingDocumentation.type ?? "",
+				anticipateRenewal: editingDocumentation.anticipateRenewal,
+				expiryAt: new Date(editingDocumentation.expiryAt) ?? new Date(),
+				vehicleId: String(editingDocumentation.vehicleId) ?? "",
+			});
 		}
 	}, [editingDocumentation, reset]);
 
@@ -359,6 +380,45 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 							}
 						/>
 					</FieldGroup>
+					<Controller
+						name="file"
+						control={control}
+						render={({ field, fieldState }) => {
+							const images: FileValue[] = field.value ?? [];
+
+							return (
+								<Field
+									data-invalid={fieldState.invalid}
+									className="md:col-span-2"
+								>
+									<FieldLabel htmlFor={field.name}>Arquivos</FieldLabel>
+
+									<InputFile
+										id={field.name}
+										name={field.name}
+										value={images}
+										onChange={field.onChange}
+										ref={field.ref}
+										accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+										maxFiles={1}
+									/>
+
+									<FilePreviewList
+										files={images}
+										onRemove={(id) => {
+											const next = images.filter((img) => img.id !== id);
+											field.onChange(next);
+										}}
+										className="mt-3"
+									/>
+
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							);
+						}}
+					/>
 					<DialogFooter>
 						<DialogClose asChild>
 							<Button variant="outline">Cancel</Button>
