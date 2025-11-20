@@ -42,20 +42,19 @@ export function FormDocumentation() {
 		enabled: !!vehicleId,
 	});
 
-	// const _setIsModalFormOpen = useCallback(
-	// 	(open: boolean) => {
-	// 		setIsModalFormOpen(open);
-	// 		if (!open) {
-	// 			setEditingDocumentation(undefined);
-	// 		}
-	// 	},
-	// 	[setEditingDocumentation],
-	// );
+	const _setIsModalFormOpen = useCallback(
+		(open: boolean) => {
+			setIsModalFormOpen(open);
+			if (!open) {
+				setEditingDocumentation(undefined);
+			}
+		},
+		[setEditingDocumentation],
+	);
 
 	const openEditModal = useCallback(
 		(documentation: DocumentationData) => {
 			setEditingDocumentation(documentation);
-			console.log("doc", documentation);
 			setIsModalFormOpen(true);
 		},
 		[setEditingDocumentation],
@@ -87,7 +86,14 @@ export function FormDocumentation() {
 					columns={columns}
 					data={dataDocumentation ?? []}
 				/>
-				<Button type="button" onClick={() => setIsModalFormOpen(true)}>
+				<Button
+					type="button"
+					onClick={() => {
+						// limpa o editing antes de abrir para garantir que o modal abra em modo "create"
+						setEditingDocumentation(undefined);
+						setIsModalFormOpen(true);
+					}}
+				>
 					Adicionar documentação
 				</Button>
 

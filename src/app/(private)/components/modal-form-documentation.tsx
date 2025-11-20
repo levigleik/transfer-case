@@ -63,15 +63,35 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 
 	const queryClient = useQueryClient();
 
-	const buildDefaultValues = useCallback((): DocumentationForm => {
-		return {
-			days: ["seg", "qua"],
-			type: "Tacógrafo",
-			anticipateRenewal: false,
-			expiryAt: new Date(),
-			vehicleId: String(editingVehicle?.id),
-		};
-	}, [editingVehicle]);
+	const buildDefaultValues = useCallback(
+		(documentation?: DocumentationData): DocumentationForm => {
+			if (documentation) {
+				return {
+					days: documentation.days ?? [],
+					type: documentation.type ?? "",
+					anticipateRenewal: documentation.anticipateRenewal ?? false,
+					// Normaliza para sempre ser um array (ou [])
+					file: documentation.file ? [documentation.file] : [],
+					expiryAt: documentation.expiryAt
+						? new Date(documentation.expiryAt)
+						: new Date(),
+					vehicleId: String(
+						documentation.vehicleId ?? editingVehicle?.id ?? "",
+					),
+				};
+			}
+
+			return {
+				days: ["seg", "qua"],
+				type: "Tacógrafo",
+				anticipateRenewal: false,
+				file: [],
+				expiryAt: new Date(),
+				vehicleId: String(editingVehicle?.id ?? ""),
+			};
+		},
+		[editingVehicle],
+	);
 
 	const {
 		handleSubmit,
@@ -80,7 +100,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 		formState: { isDirty },
 	} = useForm<DocumentationForm>({
 		resolver: zodResolver(DocumentationFormSchema),
-		defaultValues: buildDefaultValues(),
+		defaultValues: buildDefaultValues(editingDocumentation),
 	});
 
 	const { mutateAsync: mutateUploadDoc } = useMutation({
@@ -170,7 +190,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 			const hasNewFiles =
 				data.file?.some(
 					(doc: FileValue) =>
-						doc.fileName !== editingDocumentation?.file?.fileName,
+						doc?.fileName !== editingDocumentation?.file?.fileName,
 				) ?? false;
 
 			console.log("editingDocumentation", editingDocumentation);
@@ -211,17 +231,8 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	};
 
 	useEffect(() => {
-		if (editingDocumentation) {
-			reset({
-				days: editingDocumentation.days ?? [],
-				type: editingDocumentation.type ?? "",
-				anticipateRenewal: editingDocumentation.anticipateRenewal,
-				file: [editingDocumentation.file],
-				expiryAt: new Date(editingDocumentation.expiryAt) ?? new Date(),
-				vehicleId: String(editingDocumentation.vehicleId) ?? "",
-			});
-		}
-	}, [editingDocumentation, reset]);
+		reset(buildDefaultValues(editingDocumentation));
+	}, [editingDocumentation, reset, buildDefaultValues]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
