@@ -2,18 +2,10 @@
 
 import { Upload } from "lucide-react";
 import * as React from "react";
+import type { FileValue } from "@/app/(private)/utils/types-documentation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-type FileValue = {
-	id: string;
-	file?: File;
-	url?: string;
-	name?: string;
-	size?: number;
-	type?: string;
-};
 
 export interface InputFileProps
 	extends Omit<
@@ -79,9 +71,11 @@ export const InputFile = React.forwardRef<HTMLInputElement, InputFileProps>(
 										.toString(36)
 										.slice(2)}`,
 						file,
-						name: file.name,
+						fileName: file.name,
 						size: file.size,
-						type: file.type,
+						mimeType: file.type,
+						path: file.name,
+						createdAt: new Date(),
 					})),
 				];
 

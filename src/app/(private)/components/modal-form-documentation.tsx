@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookmarkIcon, FileText } from "lucide-react";
 import { useCallback, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldValue, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useDocumentationFormContext } from "@/app/(private)/context/documentation-context";
 import { useModalContext } from "@/app/(private)/context/modal-context";
@@ -63,29 +63,15 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 
 	const queryClient = useQueryClient();
 
-	const buildDefaultValues = useCallback(
-		(documentation?: DocumentationData): DocumentationForm => {
-			// if (!documentation) {
-			return {
-				days: ["seg", "qua"],
-				type: "Tacógrafo",
-				anticipateRenewal: false,
-				expiryAt: new Date(),
-				vehicleId: String(editingVehicle?.id),
-			};
-			// }
-
-			// return {
-			// 	days: documentation.days ?? [],
-			// 	type: documentation.type ?? "",
-			// 	anticipateRenewal: documentation.anticipateRenewal,
-			// 	document: documentation.document ?? "",
-			// 	expiryAt: new Date(documentation.expiryAt) ?? new Date(),
-			// 	vehicleId: String(documentation.vehicleId) ?? "",
-			// };
-		},
-		[editingVehicle],
-	);
+	const buildDefaultValues = useCallback((): DocumentationForm => {
+		return {
+			days: ["seg", "qua"],
+			type: "Tacógrafo",
+			anticipateRenewal: false,
+			expiryAt: new Date(),
+			vehicleId: String(editingVehicle?.id),
+		};
+	}, [editingVehicle]);
 
 	const {
 		handleSubmit,
@@ -94,7 +80,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 		formState: { isDirty },
 	} = useForm<DocumentationForm>({
 		resolver: zodResolver(DocumentationFormSchema),
-		defaultValues: buildDefaultValues(editingDocumentation),
+		defaultValues: buildDefaultValues(),
 	});
 
 	const { mutateAsync: mutateUploadDoc } = useMutation({
@@ -146,7 +132,8 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	// const loading = true;
 
 	const onErrors = (err: any) => {
-		toast.error("Por favor, corrija os erros no formulário.");
+		console.log(JSON.stringify(err, null, 2));
+		// toast.error("Por favor, corrija os erros no formulário.");
 	};
 
 	const onSubmit = async (data: DocumentationForm) => {
@@ -155,7 +142,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				setTabPanel("documentation");
 				return;
 			}
-			console.log(data);
+			console.log("data", data);
 
 			let savedDocumentation: DocumentationData;
 
@@ -163,6 +150,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				...data,
 				expiryAt: data.expiryAt?.toISOString(),
 				vehicleId: editingVehicle?.id,
+				file: undefined,
 				// document: [],
 			});
 
@@ -180,16 +168,23 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 			}
 
 			const hasNewFiles =
-				data.file?.some((doc: ImageValue) => !!doc.file) ?? false;
+				data.file?.some(
+					(doc: FileValue) =>
+						doc.fileName !== editingDocumentation?.file?.fileName,
+				) ?? false;
+
+			console.log("editingDocumentation", editingDocumentation);
+			console.log("hasNewFiles", hasNewFiles);
 
 			if (hasNewFiles) {
 				const formData = new FormData();
 
 				for (const doc of data.file ?? []) {
-					if (doc.file) {
+					if (doc) {
 						formData.append("files", doc.file);
 					}
 				}
+				console.log("formData", formData.getAll("files"));
 
 				await mutateUploadDoc({
 					id: savedDocumentation.id,
@@ -221,6 +216,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				days: editingDocumentation.days ?? [],
 				type: editingDocumentation.type ?? "",
 				anticipateRenewal: editingDocumentation.anticipateRenewal,
+				file: [editingDocumentation.file],
 				expiryAt: new Date(editingDocumentation.expiryAt) ?? new Date(),
 				vehicleId: String(editingDocumentation.vehicleId) ?? "",
 			});
@@ -384,8 +380,11 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 						name="file"
 						control={control}
 						render={({ field, fieldState }) => {
-							const images: FileValue[] = field.value ?? [];
-
+							const images: FileValue[] = Array.isArray(field.value)
+								? field.value
+								: field.value
+									? [field.value]
+									: [];
 							return (
 								<Field
 									data-invalid={fieldState.invalid}
@@ -396,17 +395,30 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 									<InputFile
 										id={field.name}
 										name={field.name}
-										value={images}
-										onChange={field.onChange}
+										value={images.filter((a) => a)}
+										onChange={(val: FileValue[] | FileValue | undefined) => {
+											const next = Array.isArray(val) ? val : val ? [val] : [];
+											field.onChange(next);
+										}}
 										ref={field.ref}
 										accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
 										maxFiles={1}
+										disabled={
+											field.value === null ||
+											(field.value?.filter((a) => a)?.length ?? 0) >= 1
+										}
 									/>
 
 									<FilePreviewList
-										files={images}
+										// files={images}
+										files={images.filter((a) => a)}
 										onRemove={(id) => {
-											const next = images.filter((img) => img.id !== id);
+											const current = Array.isArray(field.value)
+												? field.value
+												: field.value
+													? [field.value]
+													: [];
+											const next = current.filter((img) => img.id !== id);
 											field.onChange(next);
 										}}
 										className="mt-3"
@@ -419,14 +431,14 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 							);
 						}}
 					/>
-					<DialogFooter>
+					<DialogFooter className="flex gap-2 sm:flex-row sm:justify-end flex-row justify-between! border-t rounded-b-xl py-4">
 						<DialogClose asChild>
-							<Button variant="outline">Cancel</Button>
+							<Button variant="outline">Cancelar</Button>
 						</DialogClose>
 						{loading ? (
 							<Skeleton className="rounded-md w-full h-8" />
 						) : (
-							<Button type="submit">Save changes</Button>
+							<Button type="submit">Salvar</Button>
 						)}
 					</DialogFooter>
 				</form>

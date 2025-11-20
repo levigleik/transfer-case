@@ -2,21 +2,13 @@
 
 import { Trash } from "lucide-react";
 import * as React from "react";
+import type { FileValue } from "@/app/(private)/utils/types-documentation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type FileValue = {
-	id: string;
-	file?: File;
-	url?: string;
-	name?: string;
-	size?: number;
-	type?: string;
-};
-
 export interface FilePreviewListProps {
-	files: FileValue[];
-	onRemove?: (id: string) => void;
+	files?: FileValue[];
+	onRemove?: (id: number) => void;
 	className?: string;
 }
 
@@ -26,7 +18,6 @@ export function FilePreviewList({
 	className,
 }: FilePreviewListProps) {
 	if (!files || files.length === 0) return null;
-
 	return (
 		<ul className={cn("flex flex-col gap-2", className)}>
 			{files.map((f) => (
@@ -36,11 +27,10 @@ export function FilePreviewList({
 				>
 					<div className="min-w-0">
 						<div className="truncate text-sm font-medium">
-							{f.name ?? f.file?.name}
+							{f.fileName ?? "-"}
 						</div>
 						<div className="mt-0.5 text-xs text-muted-foreground">
-							{f.type ?? f.file?.type ?? "—"} •{" "}
-							{formatBytes(f.size ?? f.file?.size ?? 0)}
+							{f.mimeType ?? "—"} • {formatBytes(f.size ?? 0)}
 						</div>
 					</div>
 
@@ -50,7 +40,7 @@ export function FilePreviewList({
 							size="icon"
 							variant="ghost"
 							onClick={() => onRemove(f.id)}
-							aria-label={`Remover ${f.name ?? f.file?.name}`}
+							aria-label={`Remover ${f.fileName ?? "-"}`}
 						>
 							<Trash className="h-4 w-4" />
 						</Button>

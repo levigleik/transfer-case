@@ -103,11 +103,7 @@ export default function TabsVehicle() {
 				<TabsContent value="general-data" id="general-data">
 					<FormVehicleData />
 				</TabsContent>
-				<TabsContent
-					id="documentation"
-					value="documentation"
-					className="space-y-6 p-6"
-				>
+				<TabsContent id="documentation" value="documentation">
 					<FormDocumentation />
 				</TabsContent>
 			</TabsContents>

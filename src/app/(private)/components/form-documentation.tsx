@@ -13,6 +13,7 @@ import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
+import { DialogFooter } from "@/components/ui/dialog";
 import { getData } from "@/lib/functions.api";
 
 export function FormDocumentation() {
@@ -80,29 +81,30 @@ export function FormDocumentation() {
 
 	return (
 		<>
-			<DataTable
-				loading={isLoading}
-				columns={columns}
-				data={dataDocumentation ?? []}
-			/>
-			<Button type="button" onClick={() => setIsModalFormOpen(true)}>
-				Adicionar documentação
-			</Button>
+			<div className="space-y-5 p-6">
+				<DataTable
+					loading={isLoading}
+					columns={columns}
+					data={dataDocumentation ?? []}
+				/>
+				<Button type="button" onClick={() => setIsModalFormOpen(true)}>
+					Adicionar documentação
+				</Button>
 
-			<ModalFormDocumentation
-				open={isModalFormOpen}
-				setOpen={setIsModalFormOpen}
-			/>
+				<ModalFormDocumentation
+					open={isModalFormOpen}
+					setOpen={setIsModalFormOpen}
+				/>
 
-			<ModalDeleteDocumentation
-				open={isModalDeleteOpen}
-				setOpen={setIsModalDeleteOpen}
-			/>
-
-			<div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-				<Button variant="outline">Cancel</Button>
+				<ModalDeleteDocumentation
+					open={isModalDeleteOpen}
+					setOpen={setIsModalDeleteOpen}
+				/>
+			</div>
+			<div className="flex gap-2 sm:flex-row sm:justify-end flex-row justify-between! border-t rounded-b-xl px-6 py-4">
+				<Button variant="outline">Cancelar</Button>
 				<Button type="button" onClick={onSubmit} disabled={!editingVehicle?.id}>
-					Save changes
+					Continuar
 				</Button>
 			</div>
 		</>

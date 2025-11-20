@@ -21,5 +21,5 @@ export const documentationTypes = [
 
 export type DocumentationData = Omit<DocumentationType, "expiryAt"> & {
 	expiryAt: string;
-	file?: FileType;
+	file?: FileType | null;
 };
