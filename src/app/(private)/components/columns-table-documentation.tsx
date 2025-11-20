@@ -52,6 +52,28 @@ export const getDocumentationColumns = (
 		enableColumnFilter: true,
 	},
 	{
+		accessorKey: "days",
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center h-full">
+					<Button
+						variant="ghost"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
+					>
+						Tipo
+						<ChevronsUpDown className="size-3" />
+					</Button>
+				</div>
+			);
+		},
+		cell: ({ cell }) =>
+			(cell.getValue() as string[]).length >= 0
+				? (cell.getValue() as string[]).join(", ")
+				: "-",
+		enableColumnFilter: true,
+	},
+	{
 		accessorKey: "expiryAt",
 		cell: ({ cell }) => {
 			if (!cell.getValue()) return "-";

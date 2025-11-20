@@ -22,7 +22,8 @@ type ModalFormProps = {
 };
 
 export function ModalDeleteDocumentation({ open, setOpen }: ModalFormProps) {
-	const { editingDocumentation } = useDocumentationFormContext();
+	const { editingDocumentation, setEditingDocumentation } =
+		useDocumentationFormContext();
 	const { editingVehicle, setEditingVehicle } = useVehicleFormContext();
 	const queryClient = useQueryClient();
 
@@ -47,6 +48,7 @@ export function ModalDeleteDocumentation({ open, setOpen }: ModalFormProps) {
 					queryKey: ["documentation-get", editingVehicle?.id],
 				});
 
+			setEditingDocumentation(undefined);
 			toast.success("Documento deletado com sucesso");
 			setOpen(false);
 		} catch (error: any) {

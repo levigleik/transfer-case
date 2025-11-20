@@ -42,6 +42,16 @@ export function FormDocumentation() {
 		enabled: !!vehicleId,
 	});
 
+	// const _setIsModalFormOpen = useCallback(
+	// 	(open: boolean) => {
+	// 		setIsModalFormOpen(open);
+	// 		if (!open) {
+	// 			setEditingDocumentation(undefined);
+	// 		}
+	// 	},
+	// 	[setEditingDocumentation],
+	// );
+
 	const openEditModal = useCallback(
 		(documentation: DocumentationData) => {
 			setEditingDocumentation(documentation);

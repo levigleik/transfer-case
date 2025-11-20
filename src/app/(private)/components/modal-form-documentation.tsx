@@ -53,7 +53,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	const { editingDocumentation, setEditingDocumentation } =
 		useDocumentationFormContext();
 
-	const { editingVehicle, setEditingVehicle } = useVehicleFormContext();
+	const { editingVehicle } = useVehicleFormContext();
 
 	const { setTabPanel } = useModalContext();
 
@@ -61,27 +61,27 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 
 	const buildDefaultValues = useCallback(
 		(documentation?: DocumentationData): DocumentationForm => {
-			if (!documentation) {
-				return {
-					days: ["seg", "qua"],
-					type: "Tacógrafo",
-					anticipateRenewal: false,
-					document: "",
-					expiryAt: new Date(),
-					vehicleId: "1",
-				};
-			}
-
+			// if (!documentation) {
 			return {
-				days: documentation.days ?? [],
-				type: documentation.type ?? "",
-				anticipateRenewal: documentation.anticipateRenewal,
-				document: documentation.document ?? "",
-				expiryAt: new Date(documentation.expiryAt) ?? new Date(),
-				vehicleId: String(documentation.vehicleId) ?? "",
+				days: ["seg", "qua"],
+				type: "Tacógrafo",
+				anticipateRenewal: false,
+				document: "",
+				expiryAt: new Date(),
+				vehicleId: String(editingVehicle?.id),
 			};
+			// }
+
+			// return {
+			// 	days: documentation.days ?? [],
+			// 	type: documentation.type ?? "",
+			// 	anticipateRenewal: documentation.anticipateRenewal,
+			// 	document: documentation.document ?? "",
+			// 	expiryAt: new Date(documentation.expiryAt) ?? new Date(),
+			// 	vehicleId: String(documentation.vehicleId) ?? "",
+			// };
 		},
-		[],
+		[editingVehicle],
 	);
 
 	const {
@@ -148,8 +148,6 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 
 	const onSubmit = async (data: DocumentationForm) => {
 		try {
-			let savedDocumentation: DocumentationData;
-
 			if (!isDirty && editingDocumentation) {
 				setTabPanel("documentation");
 				return;
@@ -163,13 +161,12 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 			});
 
 			if (!editingDocumentation) {
-				savedDocumentation = await mutatePostDocumentation({
+				await mutatePostDocumentation({
 					url: "/documentation",
 					data: parseData,
 				});
 			} else {
-				// UPDATE
-				savedDocumentation = await mutatePutDocumentation({
+				await mutatePutDocumentation({
 					url: "/documentation",
 					id: Number(editingDocumentation.id),
 					data: parseData,
@@ -195,9 +192,19 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	};
 
 	useEffect(() => {
-		console.log("editingDocumentation", editingDocumentation);
-		reset(buildDefaultValues(editingDocumentation));
-	}, [editingDocumentation, reset, buildDefaultValues]);
+		if (editingDocumentation) {
+			reset(
+				{
+					days: editingDocumentation.days ?? [],
+					type: editingDocumentation.type ?? "",
+					anticipateRenewal: editingDocumentation.anticipateRenewal,
+					document: editingDocumentation.document ?? "",
+					expiryAt: new Date(editingDocumentation.expiryAt) ?? new Date(),
+					vehicleId: String(editingDocumentation.vehicleId) ?? "",
+				},
+			);
+		}
+	}, [editingDocumentation, reset]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
