@@ -21,7 +21,7 @@ export function NavItems({
 	groupLabel: string;
 }) {
 	return (
-		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+		<SidebarGroup>
 			<SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
 			<SidebarMenu className="gap-0.5">
 				{data.map((item) => (
