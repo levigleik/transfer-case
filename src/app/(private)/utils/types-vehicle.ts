@@ -25,5 +25,4 @@ export type VehicleData = VehicleType & {
 	brand: BrandType;
 	company: CompanyType;
 	status: StatusType;
-	documentations?: DocumentationData[];
 };

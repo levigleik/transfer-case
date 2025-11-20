@@ -1,24 +1,20 @@
 "use client";
-import { ChevronDown, CloudDownload, RotateCw } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import {
 	type DocumentationColumnActions,
 	getDocumentationColumns,
 } from "@/app/(private)/components/columns-table-documentation";
-import { getVehicleColumns } from "@/app/(private)/components/columns-table-vehicle";
-import { ModalDeleteVehicle } from "@/app/(private)/components/modal-delete-vehicle";
+import { ModalDeleteDocumentation } from "@/app/(private)/components/modal-delete-documentation";
 import { ModalFormDocumentation } from "@/app/(private)/components/modal-form-documentation";
-import { ModalTableVehicle } from "@/app/(private)/components/modal-table-vehicle";
-import TabsVehicle from "@/app/(private)/components/tabs-vehicle";
 import { useDocumentationFormContext } from "@/app/(private)/context/documentation-context";
 import { useModalContext } from "@/app/(private)/context/modal-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
+import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { DataTable } from "@/components/ui/data-table";
-import { DataTableToolbar } from "@/components/ui/data-table-toolbar";
-import { Separator } from "@/components/ui/separator";
+import { getData } from "@/lib/functions.api";
 
 export function FormDocumentation() {
 	const { setEditingDocumentation } = useDocumentationFormContext();
@@ -27,44 +23,71 @@ export function FormDocumentation() {
 	const { setTabPanel } = useModalContext();
 
 	const [isModalFormOpen, setIsModalFormOpen] = useState(false);
-	const [isModalEditOpen, setIsModalEditOpen] = useState(false);
 	const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
 
 	const onSubmit = () => {
 		setTabPanel("gas-supply");
 	};
 
+	const vehicleId = editingVehicle?.id;
+
+	const { data: dataDocumentation, isLoading } = useQuery({
+		queryKey: ["documentation-get", vehicleId],
+		queryFn: ({ signal }) =>
+			getData<DocumentationData[]>({
+				url: "/documentation",
+				signal,
+				query: `where.vehicleId=${vehicleId}`,
+			}),
+		enabled: !!vehicleId,
+	});
+
 	const openEditModal = useCallback(
 		(documentation: DocumentationData) => {
 			setEditingDocumentation(documentation);
-			setTabPanel("general-data");
+			console.log("doc", documentation);
 			setIsModalFormOpen(true);
 		},
-		[setEditingDocumentation, setTabPanel],
+		[setEditingDocumentation],
+	);
+
+	const handleOpenDeleteModal = useCallback(
+		(documentation?: DocumentationData) => {
+			setEditingDocumentation(documentation);
+			setIsModalDeleteOpen(true);
+		},
+		[setEditingDocumentation],
 	);
 
 	const actions: DocumentationColumnActions = useMemo(
 		() => ({
 			onEdit: openEditModal,
-			onDelete: () => {},
+			onDelete: handleOpenDeleteModal,
 		}),
-		[openEditModal],
+		[openEditModal, handleOpenDeleteModal],
 	);
 
 	const columns = useMemo(() => getDocumentationColumns(actions), [actions]);
 
-	const data = editingVehicle?.documentations;
-
 	return (
 		<>
-			<DataTable columns={columns} data={data ?? []} />
+			<DataTable
+				loading={isLoading}
+				columns={columns}
+				data={dataDocumentation ?? []}
+			/>
 			<Button type="button" onClick={() => setIsModalFormOpen(true)}>
-				Adicionar Fotos
+				Adicionar documentação
 			</Button>
 
 			<ModalFormDocumentation
 				open={isModalFormOpen}
 				setOpen={setIsModalFormOpen}
+			/>
+
+			<ModalDeleteDocumentation
+				open={isModalDeleteOpen}
+				setOpen={setIsModalDeleteOpen}
 			/>
 
 			<div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

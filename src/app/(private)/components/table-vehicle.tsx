@@ -56,7 +56,7 @@ export default function TableVehicle() {
 
 	const columns = useMemo(() => getVehicleColumns(actions), [actions]);
 
-	const { data, isLoading } = useQuery({
+	const { data: dataVehicle, isLoading } = useQuery({
 		queryKey: ["vehicle-get"],
 		queryFn: ({ signal }) =>
 			getData<VehicleData[]>({
@@ -64,8 +64,7 @@ export default function TableVehicle() {
 				signal,
 				query:
 					"include.classification=true&include.category=true" +
-					"&&include.brand=true&&include.company&&include.status=true" +
-					"&&include.documentations=true",
+					"&&include.brand=true&&include.company&&include.status=true",
 			}),
 	});
 	return (
@@ -80,7 +79,7 @@ export default function TableVehicle() {
 				<DataTable
 					columns={columns}
 					loading={isLoading}
-					data={data ?? []}
+					data={dataVehicle ?? []}
 					topLeftActions={(table) => <DataTableToolbar table={table} />}
 					topRightActions={
 						<div className="flex items-center gap-2">
@@ -107,12 +106,12 @@ export default function TableVehicle() {
 							>
 								<TabsVehicle />
 							</ModalTableVehicle>
-							<ModalDeleteVehicle
-								open={isModalDeleteOpen}
-								setOpen={setIsModalDeleteOpen}
-							/>
 						</div>
 					}
+				/>
+				<ModalDeleteVehicle
+					open={isModalDeleteOpen}
+					setOpen={setIsModalDeleteOpen}
 				/>
 			</Card>
 		</div>

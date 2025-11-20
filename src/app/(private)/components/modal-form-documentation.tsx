@@ -1,8 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookmarkIcon, FileText } from "lucide-react";
+import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useDocumentationFormContext } from "@/app/(private)/context/documentation-context";
@@ -52,33 +53,36 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	const { editingDocumentation, setEditingDocumentation } =
 		useDocumentationFormContext();
 
-	const { editingVehicle } = useVehicleFormContext();
+	const { editingVehicle, setEditingVehicle } = useVehicleFormContext();
 
 	const { setTabPanel } = useModalContext();
 
-	const buildDefaultValues = (
-		documentation?: DocumentationData,
-	): DocumentationForm => {
-		if (!documentation) {
-			return {
-				days: ["seg", "qua"],
-				type: "Tacógrafo",
-				anticipateRenewal: false,
-				document: "",
-				expiryAt: new Date(),
-				vehicleId: "1",
-			};
-		}
+	const queryClient = useQueryClient();
 
-		return {
-			days: documentation.days ?? [],
-			type: documentation.type ?? "",
-			anticipateRenewal: documentation.anticipateRenewal,
-			document: documentation.document ?? "",
-			expiryAt: new Date(documentation.expiryAt) ?? new Date(),
-			vehicleId: String(documentation.vehicleId) ?? "1",
-		};
-	};
+	const buildDefaultValues = useCallback(
+		(documentation?: DocumentationData): DocumentationForm => {
+			if (!documentation) {
+				return {
+					days: ["seg", "qua"],
+					type: "Tacógrafo",
+					anticipateRenewal: false,
+					document: "",
+					expiryAt: new Date(),
+					vehicleId: "1",
+				};
+			}
+
+			return {
+				days: documentation.days ?? [],
+				type: documentation.type ?? "",
+				anticipateRenewal: documentation.anticipateRenewal,
+				document: documentation.document ?? "",
+				expiryAt: new Date(documentation.expiryAt) ?? new Date(),
+				vehicleId: String(documentation.vehicleId) ?? "",
+			};
+		},
+		[],
+	);
 
 	const {
 		handleSubmit,
@@ -173,6 +177,11 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 			}
 
 			setEditingDocumentation(undefined);
+
+			if (editingVehicle)
+				await queryClient.invalidateQueries({
+					queryKey: ["documentation-get", editingVehicle?.id],
+				});
 			reset();
 			toast.success(
 				editingDocumentation
@@ -184,6 +193,12 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 			toastErrorsApi(error);
 		}
 	};
+
+	useEffect(() => {
+		console.log("editingDocumentation", editingDocumentation);
+		reset(buildDefaultValues(editingDocumentation));
+	}, [editingDocumentation, reset, buildDefaultValues]);
+
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogContent
