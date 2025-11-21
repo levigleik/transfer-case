@@ -66,7 +66,7 @@ export const FormMultiSelect = React.forwardRef<
 				onValuesChange={onValuesChange}
 			>
 				<MultiSelectTrigger
-					ref={ref}
+					// ref={ref}
 					onBlur={onBlur}
 					disabled={disabled}
 					className={cn("w-full", className)}
