@@ -1,4 +1,6 @@
+import { UserIcon } from "lucide-react";
 import { LanguageToggle } from "@/components/navbar/language-toggle";
+import { NavUser } from "@/components/navbar/nav-user";
 import { PassApps } from "@/components/navbar/pass-apps";
 import { SearchCommand } from "@/components/navbar/search-command";
 import { ThemeToggle } from "@/components/navbar/theme-toggle";
@@ -35,6 +37,13 @@ export function AppNavbar() {
 				<ThemeToggle />
 				<LanguageToggle />
 				<PassApps />
+				<NavUser
+					user={{
+						avatar: "UserIcon",
+						name: "Jonathan Doe",
+						email: "jonathandoe@example.com",
+					}}
+				/>
 			</div>
 		</div>
 	);

@@ -24,9 +24,9 @@ export function FormDocumentation() {
 	const [isModalFormOpen, setIsModalFormOpen] = useState(false);
 	const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
 
-	const onSubmit = () => {
-		setTabPanel("tab-gas-supply");
-	};
+	const handleForward = () => setTabPanel("tab-gas-supply");
+
+	const handleBack = () => setTabPanel("tab-general-data");
 
 	const vehicleId = editingVehicle?.id;
 
@@ -96,8 +96,14 @@ export function FormDocumentation() {
 				/>
 			</div>
 			<div className="flex gap-2 sm:flex-row sm:justify-end flex-row justify-between! border-t rounded-b-xl px-6 py-4">
-				<Button variant="outline">Cancelar</Button>
-				<Button type="button" onClick={onSubmit} disabled={!editingVehicle?.id}>
+				<Button variant="outline" onClick={handleBack}>
+					Voltar
+				</Button>
+				<Button
+					type="button"
+					onClick={handleForward}
+					disabled={!editingVehicle?.id}
+				>
 					Continuar
 				</Button>
 			</div>

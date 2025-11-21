@@ -59,7 +59,7 @@ export function PassApps() {
 							<PopoverTrigger asChild>
 								<Button
 									variant="ghost"
-									className="rounded-full"
+									className="rounded-full [&>svg]:text-muted-foreground/80 hover:[&>svg]:text-foreground"
 									size="icon"
 									onClick={() => setOpen((op) => !op)}
 								>
@@ -73,7 +73,7 @@ export function PassApps() {
 					<PopoverTrigger asChild>
 						<Button
 							variant="ghost"
-							className="rounded-full"
+							className="rounded-full [&>svg]:text-muted-foreground/80 hover:[&>svg]:text-foreground"
 							size="icon"
 							onClick={() => setOpen((op) => !op)}
 						>

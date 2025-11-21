@@ -24,9 +24,7 @@ export function FormOccurrence() {
 	const [isModalFormOpen, setIsModalFormOpen] = useState(false);
 	const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
 
-	const onSubmit = () => {
-		setTabPanel("tab-gas-supply");
-	};
+	const handleBack = () => setTabPanel("tab-gas-supply");
 
 	const vehicleId = editingVehicle?.id;
 
@@ -97,9 +95,8 @@ export function FormOccurrence() {
 				/>
 			</div>
 			<div className="flex gap-2 sm:flex-row sm:justify-end flex-row justify-between! border-t rounded-b-xl px-6 py-4">
-				<Button variant="outline">Cancelar</Button>
-				<Button type="button" onClick={onSubmit} disabled={!editingVehicle?.id}>
-					Continuar
+				<Button variant="outline" onClick={handleBack}>
+					Voltar
 				</Button>
 			</div>
 		</>

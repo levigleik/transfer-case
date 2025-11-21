@@ -85,7 +85,16 @@ export function ModalDeleteDocumentation({ open, setOpen }: ModalFormProps) {
 						<div className="truncate">
 							<p className="mb-0.5 text-muted-foreground">Vencimento</p>
 							<span className="text-foreground">
-								{editingDocumentation?.expiryAt}
+								{editingDocumentation
+									? new Date(editingDocumentation?.expiryAt).toLocaleDateString(
+											"pt-BR",
+											{
+												day: "2-digit",
+												month: "2-digit",
+												year: "numeric",
+											},
+										)
+									: "-"}
 							</span>
 						</div>
 					</div>
