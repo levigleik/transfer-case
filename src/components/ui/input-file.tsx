@@ -12,8 +12,8 @@ export interface InputFileProps
 		React.InputHTMLAttributes<HTMLInputElement>,
 		"type" | "value" | "onChange"
 	> {
-	value?: FileValue[];
-	onChange?: (files: FileValue[]) => void;
+	value?: any;
+	onChange?: (files: any) => void;
 	maxFiles?: number;
 	accept?: string;
 	multiple?: boolean;
@@ -61,7 +61,7 @@ export const InputFile = React.forwardRef<HTMLInputElement, InputFileProps>(
 
 				if (slicedFiles.length === 0) return;
 
-				const nextFiles: FileValue[] = [
+				const nextFiles: any = [
 					...current,
 					...slicedFiles.map((file) => ({
 						id:

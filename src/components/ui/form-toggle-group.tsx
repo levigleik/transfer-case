@@ -35,7 +35,7 @@ export const FormToggleGroup = React.forwardRef<
 	React.ElementRef<typeof ToggleGroup>,
 	FormToggleGroupProps
 >(({ options, className, itemClassName, ...props }, ref) => {
-	const handleValueChange = (val: string | string[]) => {
+	const handleValueChange = (val: string & string[]) => {
 		if (props.onChange) {
 			props.onChange(val);
 		}
@@ -46,7 +46,7 @@ export const FormToggleGroup = React.forwardRef<
 			ref={ref}
 			className={cn("flex flex-wrap gap-1 justify-start", className)}
 			onValueChange={handleValueChange}
-			{...props}
+			{...(props as any)}
 		>
 			{options.map((option) => (
 				<ToggleGroupItem
