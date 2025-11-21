@@ -51,14 +51,14 @@ export function FormVehicleData() {
 				identifier: "001",
 				model: "Buss Vista 340",
 				year: "2023",
-				capacity: "46",
-				doors: "1",
+				capacity: 46,
+				doors: 1,
 				uf: "RJ",
 				plateType: "MERCOSUL" as PlateType,
 				plate: "SQX8A12",
 				renavam: "13653733521",
 				chassi: "9BD111060T5002156",
-				review: "0",
+				review: 0,
 				description: "",
 				gasId: "1",
 				brandId: "1",
@@ -74,14 +74,14 @@ export function FormVehicleData() {
 			identifier: vehicle.identifier ?? "",
 			model: vehicle.model ?? "",
 			year: vehicle.year ?? "",
-			capacity: String(vehicle.capacity ?? "0"),
-			doors: String(vehicle.doors ?? "0"),
+			capacity: vehicle.capacity ?? 0,
+			doors: vehicle.doors ?? 0,
 			uf: vehicle.uf ?? "",
 			plateType: (vehicle.plateType ?? "MERCOSUL") as PlateType,
 			plate: vehicle.plate ?? "",
 			renavam: vehicle.renavam ?? "",
 			chassi: vehicle.chassi ?? "",
-			review: String(vehicle.review ?? "0"),
+			review: vehicle.review ?? 0,
 			description: vehicle.description ?? "",
 			gasId: String(vehicle.gasId ?? ""),
 			brandId: String(vehicle.brandId ?? ""),
@@ -396,6 +396,7 @@ export function FormVehicleData() {
 										aria-invalid={fieldState.invalid}
 										placeholder="45"
 										value={Number(field.value)}
+										min={1}
 									/>
 									{fieldState.invalid && (
 										<FieldError errors={[fieldState.error]} />
@@ -418,6 +419,7 @@ export function FormVehicleData() {
 										aria-invalid={fieldState.invalid}
 										placeholder="4"
 										value={Number(field.value)}
+										min={1}
 									/>
 									{fieldState.invalid && (
 										<FieldError errors={[fieldState.error]} />
@@ -522,6 +524,7 @@ export function FormVehicleData() {
 										placeholder="2400"
 										decimalScale={3}
 										value={Number(field.value)}
+										min={0}
 									/>
 									{fieldState.invalid && (
 										<FieldError errors={[fieldState.error]} />

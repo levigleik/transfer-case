@@ -15,7 +15,10 @@ export interface NumberInputProps
 	value?: number; // Controlled value
 	suffix?: string;
 	prefix?: string;
+	/** callback used by some integrations (kept for compatibility) */
 	onValueChange?: (value: number | undefined) => void;
+	/** callback used by React Hook Form Controller (field.onChange) */
+	onChange?: (value: number | undefined) => void;
 	fixedDecimalScale?: boolean;
 	decimalScale?: number;
 }
@@ -30,6 +33,7 @@ export const InputNumber = forwardRef<HTMLInputElement, NumberInputProps>(
 			min = -Infinity,
 			max = Infinity,
 			onValueChange,
+			onChange, // note: Controller provides field.onChange here
 			fixedDecimalScale = false,
 			decimalScale = 0,
 			suffix,
@@ -39,35 +43,59 @@ export const InputNumber = forwardRef<HTMLInputElement, NumberInputProps>(
 		},
 		ref,
 	) => {
+		// Keep numeric state internally but always notify external handlers
 		const [value, setValue] = useState<number | undefined>(
 			controlledValue ?? defaultValue,
 		);
 
+		// Sync controlled value -> internal
+		useEffect(() => {
+			if (controlledValue !== undefined) {
+				setValue(controlledValue);
+			}
+		}, [controlledValue]);
+
+		// Helper to notify both callbacks
+		const notifyValueChange = useCallback(
+			(newValue: number | undefined) => {
+				// update internal state (if uncontrolled)
+				if (controlledValue === undefined) {
+					setValue(newValue);
+				}
+				// call both callbacks if provided
+				onValueChange?.(newValue);
+				onChange?.(newValue);
+			},
+			[controlledValue, onValueChange, onChange],
+		);
+
 		const handleIncrement = useCallback(() => {
-			setValue((prev) =>
-				prev === undefined
+			const next =
+				value === undefined
 					? (stepper ?? 1)
-					: Math.min(prev + (stepper ?? 1), max),
-			);
-		}, [stepper, max]);
+					: Math.min(value + (stepper ?? 1), max);
+			notifyValueChange(next);
+		}, [value, stepper, max, notifyValueChange]);
 
 		const handleDecrement = useCallback(() => {
-			setValue((prev) =>
-				prev === undefined
+			const next =
+				value === undefined
 					? -(stepper ?? 1)
-					: Math.max(prev - (stepper ?? 1), min),
-			);
-		}, [stepper, min]);
+					: Math.max(value - (stepper ?? 1), min);
+			notifyValueChange(next);
+		}, [value, stepper, min, notifyValueChange]);
 
 		useEffect(() => {
 			const handleKeyDown = (e: KeyboardEvent) => {
-				if (
-					document.activeElement ===
-					(ref as React.RefObject<HTMLInputElement>).current
-				) {
+				// guard ref type
+				const inputEl = (ref as React.RefObject<HTMLInputElement>).current;
+				if (!inputEl) return;
+				if (document.activeElement === inputEl) {
 					if (e.key === "ArrowUp") {
+						e.preventDefault();
 						handleIncrement();
 					} else if (e.key === "ArrowDown") {
+						e.preventDefault();
 						handleDecrement();
 					}
 				}
@@ -80,36 +108,30 @@ export const InputNumber = forwardRef<HTMLInputElement, NumberInputProps>(
 			};
 		}, [handleIncrement, handleDecrement, ref]);
 
-		useEffect(() => {
-			if (controlledValue !== undefined) {
-				setValue(controlledValue);
-			}
-		}, [controlledValue]);
-
 		const handleChange = (values: {
 			value: string;
 			floatValue: number | undefined;
 		}) => {
 			const newValue =
 				values.floatValue === undefined ? undefined : values.floatValue;
-			setValue(newValue);
-			if (onValueChange) {
-				onValueChange(newValue);
-			}
+			// update state and notify RHF (and any other handler)
+			notifyValueChange(newValue);
 		};
 
 		const handleBlur = () => {
 			if (value !== undefined) {
 				if (value < min) {
-					setValue(min);
-					(ref as React.RefObject<HTMLInputElement>).current!.value =
-						String(min);
+					notifyValueChange(min);
+					const el = (ref as React.RefObject<HTMLInputElement>).current;
+					if (el) el.value = String(min);
 				} else if (value > max) {
-					setValue(max);
-					(ref as React.RefObject<HTMLInputElement>).current!.value =
-						String(max);
+					notifyValueChange(max);
+					const el = (ref as React.RefObject<HTMLInputElement>).current;
+					if (el) el.value = String(max);
 				}
 			}
+			// also forward possible onBlur passed via props
+			if (props.onBlur) props.onBlur(new Event("blur") as unknown as any);
 		};
 
 		return (
@@ -121,7 +143,7 @@ export const InputNumber = forwardRef<HTMLInputElement, NumberInputProps>(
 					decimalScale={decimalScale}
 					fixedDecimalScale={fixedDecimalScale}
 					allowNegative={min < 0}
-					valueIsNumericString
+					valueIsNumericString={false}
 					onBlur={handleBlur}
 					max={max}
 					min={min}

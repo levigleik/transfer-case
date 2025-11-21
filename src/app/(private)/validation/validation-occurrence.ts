@@ -28,5 +28,5 @@ export const OccurrenceFormSchema = OccurrenceBaseSchema.extend({
 	fileId: z.string().optional(),
 	vehicleId: z.string(),
 	seriousnessId: z.string(),
-	classificationId: z.string(),
+	classificationId: z.string().min(1, "Classificação é obrigatória"),
 });

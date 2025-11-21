@@ -148,11 +148,9 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	}));
 
 	const loading = isLoadingPostDocumentation || isLoadingPutDocumentation;
-	// const loading = true;
 
 	const onErrors = (err: any) => {
-		console.log(JSON.stringify(err, null, 2));
-		// toast.error("Por favor, corrija os erros no formulário.");
+		toast.error("Por favor, corrija os erros no formulário.");
 	};
 
 	const onSubmit = async (data: DocumentationForm) => {
@@ -395,7 +393,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 									data-invalid={fieldState.invalid}
 									className="md:col-span-2"
 								>
-									<FieldLabel htmlFor={field.name}>Arquivos</FieldLabel>
+									<FieldLabel htmlFor={field.name}>Documento</FieldLabel>
 
 									<InputFile
 										id={field.name}

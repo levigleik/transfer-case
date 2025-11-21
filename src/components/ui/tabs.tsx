@@ -227,7 +227,23 @@ function TabsContents({
 			"value" in child.props &&
 			child.props.value === activeValue,
 	);
+	const panelRefs = React.useRef<Record<number, HTMLDivElement | null>>({});
+	const setPanelRef = React.useCallback(
+		(index: number) => (el: HTMLDivElement | null) => {
+			panelRefs.current[index] = el;
+		},
+		[],
+	);
 
+	// callback chamado pelo motion quando a animação do wrapper terminar
+	const handleAnimationComplete = React.useCallback(() => {
+		const node = panelRefs.current[activeIndex];
+		if (node) {
+			// reset instantâneo para o topo
+			node.scrollIntoView?.({ behavior: "smooth" });
+		}
+		// Se quiser *suavizar* o retorno ao topo, troque behavior por "smooth"
+	}, [activeIndex]);
 	return (
 		<div
 			data-slot="tabs-contents"
@@ -238,9 +254,14 @@ function TabsContents({
 				className="flex -mx-2"
 				animate={{ x: activeIndex * -100 + "%" }}
 				transition={transition}
+				onAnimationComplete={handleAnimationComplete}
 			>
 				{childrenArray.map((child, index) => (
-					<div key={index} className="w-full shrink-0 px-2">
+					<div
+						key={index}
+						ref={setPanelRef(index)}
+						className="w-full shrink-0 px-2 h-full"
+					>
 						{child}
 					</div>
 				))}

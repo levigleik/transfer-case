@@ -6,7 +6,6 @@ export const FileSchema = z.object({
 	path: z.string(),
 	mimeType: z.string(),
 	size: z.number().int(),
-	documentationId: z.number().int().nullish(),
 	createdAt: z.date(),
 });
 

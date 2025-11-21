@@ -16,7 +16,10 @@ export type OccurrenceForm = z.infer<typeof OccurrenceFormSchema>;
 
 export type FileValue = z.infer<typeof FileValueSchema>;
 
-export type OccurrenceData = Omit<OccurrenceType, "date"> & {
+export type OccurrenceData = Omit<
+	OccurrenceType,
+	"occurrenceDate" | "registerDate"
+> & {
 	occurrenceDate: string;
 	registerDate: string;
 	file?: FileType | null;

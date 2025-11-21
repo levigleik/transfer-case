@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useOccurrenceFormContext } from "@/app/(private)/context/occurrence-context";
+import { useGasSupplyFormContext } from "@/app/(private)/context/gas-supply-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,42 +14,41 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { deleteData, toastErrorsApi } from "@/lib/functions.api";
-import type { DeleteData, OccurrenceType } from "@/types/models";
+import type { DeleteData, GasSupplyType } from "@/types/models";
 
 type ModalFormProps = {
 	open: boolean;
 	setOpen: (open: boolean) => void;
 };
 
-export function ModalDeleteOccurrence({ open, setOpen }: ModalFormProps) {
-	const { editingOccurrence, setEditingOccurrence } =
-		useOccurrenceFormContext();
+export function ModalDeleteGasSupply({ open, setOpen }: ModalFormProps) {
+	const { editingGasSupply, setEditingGasSupply } = useGasSupplyFormContext();
 	const { editingVehicle } = useVehicleFormContext();
 	const queryClient = useQueryClient();
 
 	const {
-		mutateAsync: mutateDeleteOccurrence,
-		isPending: isLoadingDeleteOccurrence,
+		mutateAsync: mutateDeleteGasSupply,
+		isPending: isLoadingDeleteGasSupply,
 	} = useMutation({
-		mutationFn: (val: DeleteData) => deleteData<OccurrenceType>(val),
-		mutationKey: ["occurrence-delete", editingOccurrence?.id],
+		mutationFn: (val: DeleteData) => deleteData<GasSupplyType>(val),
+		mutationKey: ["gas-supply-delete", editingGasSupply?.id],
 	});
 
-	const handleDeleteOccurrence = async () => {
-		if (!editingOccurrence?.id) return;
+	const handleDeleteGasSupply = async () => {
+		if (!editingGasSupply?.id) return;
 		try {
-			await mutateDeleteOccurrence({
-				url: "/occurrence",
-				id: editingOccurrence?.id,
+			await mutateDeleteGasSupply({
+				url: "/gasSupply",
+				id: editingGasSupply?.id,
 			});
 
 			if (editingVehicle)
 				await queryClient.invalidateQueries({
-					queryKey: ["occurrence-get", editingVehicle?.id],
+					queryKey: ["gas-supply-get", editingVehicle?.id],
 				});
 
-			setEditingOccurrence(undefined);
-			toast.success("Ocorrência deletado com sucesso");
+			setEditingGasSupply(undefined);
+			toast.success("Abastecimento deletado com sucesso");
 			setOpen(false);
 		} catch (error: any) {
 			toastErrorsApi(error);
@@ -74,26 +73,35 @@ export function ModalDeleteOccurrence({ open, setOpen }: ModalFormProps) {
 					</DialogHeader>
 				</div>
 				<div className="text-sm px-6">
-					<p className="mb-2 font-medium">Informações da ocorrência:</p>
+					<p className="mb-2 font-medium">Informações do abastecimento:</p>
 					<div className="grid gap-2">
 						<div className="truncate">
-							<p className="mb-0.5 text-muted-foreground">Seriedade</p>
+							<p className="mb-0.5 text-muted-foreground">
+								Data do abastecimento
+							</p>
 							<span className="text-foreground">
-								{editingOccurrence?.seriousnessId}
+								{editingGasSupply
+									? new Date(editingGasSupply?.supplyAt).toLocaleDateString(
+											"pt-BR",
+											{
+												day: "2-digit",
+												month: "2-digit",
+												year: "numeric",
+											},
+										)
+									: "-"}
 							</span>
 						</div>
 						<div className="truncate">
-							<p className="mb-0.5 text-muted-foreground">Registrada em</p>
+							<p className="mb-0.5 text-muted-foreground">Posto</p>
 							<span className="text-foreground">
-								{editingOccurrence
-									? new Date(
-											editingOccurrence?.registerDate,
-										).toLocaleDateString("pt-BR", {
-											day: "2-digit",
-											month: "2-digit",
-											year: "numeric",
-										})
-									: "-"}
+								{editingGasSupply?.gasStation?.name || "-"}
+							</span>
+						</div>
+						<div className="truncate">
+							<p className="mb-0.5 text-muted-foreground">Combustível</p>
+							<span className="text-foreground">
+								{editingGasSupply?.gas?.type || "-"}
 							</span>
 						</div>
 					</div>
@@ -102,13 +110,13 @@ export function ModalDeleteOccurrence({ open, setOpen }: ModalFormProps) {
 					<DialogClose asChild>
 						<Button variant="outline">Cancel</Button>
 					</DialogClose>
-					{isLoadingDeleteOccurrence ? (
+					{isLoadingDeleteGasSupply ? (
 						<Skeleton className="rounded-md w-full h-8" />
 					) : (
 						<Button
 							variant="destructive"
 							type="button"
-							onClick={handleDeleteOccurrence}
+							onClick={handleDeleteGasSupply}
 						>
 							Excluir
 						</Button>

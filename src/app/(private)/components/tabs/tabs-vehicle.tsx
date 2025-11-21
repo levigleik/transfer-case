@@ -4,6 +4,7 @@ import { FileText, Fuel, Info, TriangleAlert } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { FormDocumentation } from "@/app/(private)/components/form/form-documentation";
+import { FormGasSupply } from "@/app/(private)/components/form/form-gas-supply";
 import { FormOccurrence } from "@/app/(private)/components/form/form-occurrence";
 import { FormVehicleData } from "@/app/(private)/components/form/form-vehicle-data";
 import { useModalContext } from "@/app/(private)/context/modal-context";
@@ -32,7 +33,7 @@ export default function TabsVehicle() {
 		if (!editingVehicle?.id && newValue !== "general-data") {
 			toast.error("Adicione os dados gerais do veículo antes de continuar.");
 		} else {
-			scrollToTab(newValue);
+			// scrollToTab(newValue);
 			setTabPanel(newValue as any);
 		}
 	};
@@ -45,7 +46,7 @@ export default function TabsVehicle() {
 
 	return (
 		<Tabs
-			defaultValue="general-data"
+			defaultValue="tab-general-data"
 			className="flex flex-col flex-1 overflow-hidden"
 			value={tabPanel as any}
 			onValueChange={handleTabChange as any}
@@ -106,6 +107,9 @@ export default function TabsVehicle() {
 				</TabsContent>
 				<TabsContent id="tab-documentation" value="tab-documentation">
 					<FormDocumentation />
+				</TabsContent>
+				<TabsContent id="tab-gas-supply" value="tab-gas-supply">
+					<FormGasSupply />
 				</TabsContent>
 				<TabsContent id="tab-occurrence" value="tab-occurrence">
 					<FormOccurrence />

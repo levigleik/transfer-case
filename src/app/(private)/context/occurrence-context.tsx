@@ -6,7 +6,7 @@ import type { OccurrenceData } from "@/app/(private)/types/types-occurrence";
 
 type OccurrenceFormContextValue = {
 	editingOccurrence?: OccurrenceData;
-	setEditingOccurrence: (occurence?: OccurrenceData) => void;
+	setEditingOccurrence: (occurrence?: OccurrenceData) => void;
 };
 
 const OccurrenceFormContext = React.createContext<

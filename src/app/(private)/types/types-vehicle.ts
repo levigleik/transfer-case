@@ -1,5 +1,4 @@
 import type { z } from "zod";
-import type { DocumentationData } from "@/app/(private)/types/types-documentation";
 import type {
 	ImageValueSchema,
 	VehicleFormSchema,

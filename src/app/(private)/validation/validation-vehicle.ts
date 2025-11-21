@@ -35,15 +35,15 @@ export const VehiclePayloadSchema = VehicleBaseSchema.extend({
 
 export const VehicleFormSchema = VehicleBaseSchema.extend({
 	identifier: z.string().min(1, "Identificador é obrigatório"),
-	capacity: z.string().min(1, "Capacidade é obrigatória"),
-	doors: z.string().min(1, "Nº de portas é obrigatório"),
+	capacity: z.number().min(1, "Capacidade é obrigatória"),
+	doors: z.number().min(1, "Nº de portas é obrigatório"),
 	brandId: z.string().min(1, "Marca é obrigatória"),
 	categoryId: z.string().min(1, "Categoria é obrigatória"),
 	classificationId: z.string().min(1, "Classificação é obrigatória"),
 	gasId: z.string().min(1, "Combustível é obrigatório"),
 	companyId: z.string().min(1, "Empresa é obrigatória"),
 	statusId: z.string().min(1, "Status é obrigatório"),
-	review: z.string().min(1, "Revisão é obrigatória"),
+	review: z.number().min(0, "Revisão é obrigatória"),
 	model: z.string().min(1, "Modelo é obrigatório"),
 	year: z.string().length(4, "Ano deve ter 4 dígitos"),
 	plate: z.string().min(7, "Placa inválida").max(8, "Placa inválida"),

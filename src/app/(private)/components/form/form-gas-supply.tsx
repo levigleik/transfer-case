@@ -1,0 +1,108 @@
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useMemo, useState } from "react";
+import {
+	type GasSupplyColumnActions,
+	getGasSupplyColumns,
+} from "@/app/(private)/components/columns/columns-table-gas-supply";
+import { ModalDeleteGasSupply } from "@/app/(private)/components/modal/modal-delete-gas-supply";
+import { ModalFormGasSupply } from "@/app/(private)/components/modal/modal-form-gas-supply";
+import { useGasSupplyFormContext } from "@/app/(private)/context/gas-supply-context";
+import { useModalContext } from "@/app/(private)/context/modal-context";
+import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
+import type { GasSupplyData } from "@/app/(private)/types/types-gas-supply";
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import { getData } from "@/lib/functions.api";
+
+export function FormGasSupply() {
+	const { setEditingGasSupply } = useGasSupplyFormContext();
+	const { editingVehicle } = useVehicleFormContext();
+
+	const { setTabPanel } = useModalContext();
+
+	const [isModalFormOpen, setIsModalFormOpen] = useState(false);
+	const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+
+	const onSubmit = () => {
+		setTabPanel("tab-gas-supply");
+	};
+
+	const vehicleId = editingVehicle?.id;
+
+	const { data: dataGasSupply, isLoading } = useQuery({
+		queryKey: ["gas-supply-get", vehicleId],
+		queryFn: ({ signal }) =>
+			getData<GasSupplyData[]>({
+				url: "/gasSupply",
+				signal,
+				query:
+					`where.vehicleId=${vehicleId}&&include.file=true&&` +
+					"include.gas&&include.gasStation=true",
+			}),
+		enabled: !!vehicleId,
+	});
+
+	const openEditModal = useCallback(
+		(gasSupply: GasSupplyData) => {
+			setEditingGasSupply(gasSupply);
+			setIsModalFormOpen(true);
+		},
+		[setEditingGasSupply],
+	);
+
+	const handleOpenDeleteModal = useCallback(
+		(gasSupply?: GasSupplyData) => {
+			setEditingGasSupply(gasSupply);
+			setIsModalDeleteOpen(true);
+		},
+		[setEditingGasSupply],
+	);
+
+	const actions: GasSupplyColumnActions = useMemo(
+		() => ({
+			onEdit: openEditModal,
+			onDelete: handleOpenDeleteModal,
+		}),
+		[openEditModal, handleOpenDeleteModal],
+	);
+
+	const columns = useMemo(() => getGasSupplyColumns(actions), [actions]);
+
+	return (
+		<>
+			<div className="space-y-5 p-6">
+				<DataTable
+					loading={isLoading}
+					columns={columns}
+					data={dataGasSupply ?? []}
+				/>
+				<Button
+					type="button"
+					onClick={() => {
+						setEditingGasSupply(undefined);
+						setIsModalFormOpen(true);
+					}}
+				>
+					Adicionar abastecimento
+				</Button>
+
+				<ModalFormGasSupply
+					open={isModalFormOpen}
+					setOpen={setIsModalFormOpen}
+				/>
+
+				<ModalDeleteGasSupply
+					open={isModalDeleteOpen}
+					setOpen={setIsModalDeleteOpen}
+				/>
+			</div>
+			<div className="flex gap-2 sm:flex-row sm:justify-end flex-row justify-between! border-t rounded-b-xl px-6 py-4">
+				<Button variant="outline">Cancelar</Button>
+				<Button type="button" onClick={onSubmit} disabled={!editingVehicle?.id}>
+					Continuar
+				</Button>
+			</div>
+		</>
+	);
+}

@@ -2,26 +2,24 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookmarkIcon, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useCallback, useEffect } from "react";
-import { Controller, FieldValue, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useGasSupplyFormContext } from "@/app/(private)/context/gas-supply-context";
 import { useModalContext } from "@/app/(private)/context/modal-context";
-import { useOccurrenceFormContext } from "@/app/(private)/context/occurrence-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
-import { useOccurrenceFormOptions } from "@/app/(private)/hooks/use-occurrence-form-options";
-import { useVehicleFormOptions } from "@/app/(private)/hooks/use-vehicle-form-options";
+import { useGasSupplyFormOptions } from "@/app/(private)/hooks/use-gas-supply-form-options";
 import type {
 	FileValue,
-	OccurrenceData,
-	OccurrenceForm,
-	OccurrencePayload,
-} from "@/app/(private)/types/types-occurrence";
-import type { ImageValue } from "@/app/(private)/types/types-vehicle";
+	GasSupplyData,
+	GasSupplyForm,
+	GasSupplyPayload,
+} from "@/app/(private)/types/types-gas-supply";
 import {
-	OccurrenceFormSchema,
-	OccurrencePayloadSchema,
-} from "@/app/(private)/validation/validation-occurrence";
+	GasSupplyFormSchema,
+	GasSupplyPayloadSchema,
+} from "@/app/(private)/validation/validation-gas-supply";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -39,13 +37,11 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { FilePreviewList } from "@/components/ui/file-preview-list";
-import { FormBooleanButton } from "@/components/ui/form-boolean-button";
 import { FormDatePicker } from "@/components/ui/form-date-picker";
 import { FormSelect } from "@/components/ui/form-select";
-import { FormToggleGroup } from "@/components/ui/form-toggle-group";
 import { InputFile } from "@/components/ui/input-file";
+import { InputNumber } from "@/components/ui/input-number";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
 import { postData, putData, toastErrorsApi } from "@/lib/functions.api";
 import type { PostData, PutData } from "@/types/models";
 
@@ -55,9 +51,8 @@ type ModalFormProps = {
 	children?: React.ReactNode;
 };
 
-export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
-	const { editingOccurrence, setEditingOccurrence } =
-		useOccurrenceFormContext();
+export function ModalFormGasSupply({ open, setOpen }: ModalFormProps) {
+	const { editingGasSupply, setEditingGasSupply } = useGasSupplyFormContext();
 
 	const { editingVehicle } = useVehicleFormContext();
 
@@ -66,31 +61,33 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 	const queryClient = useQueryClient();
 
 	const buildDefaultValues = useCallback(
-		(occurrence?: OccurrenceData): OccurrenceForm => {
-			if (occurrence) {
+		(gasSupply?: GasSupplyData): GasSupplyForm => {
+			if (gasSupply) {
 				return {
-					registerDate: occurrence.registerDate
-						? new Date(occurrence.registerDate)
+					supplyAt: gasSupply.supplyAt
+						? new Date(gasSupply.supplyAt)
 						: new Date(),
-					occurrenceDate: occurrence.occurrenceDate
-						? new Date(occurrence.occurrenceDate)
-						: new Date(),
-					description: occurrence.description ?? false,
-					file: occurrence.file ? [occurrence.file] : [],
-					vehicleId: String(occurrence.vehicleId ?? editingVehicle?.id ?? ""),
-					seriousnessId: String(occurrence.seriousnessId),
-					classificationId: String(occurrence.classificationId),
+					kmToStop: gasSupply.kmToStop ?? 0,
+					kmToReview: gasSupply.kmToReview ?? 0,
+					quantity: gasSupply.quantity ?? 0,
+					totalPrice: gasSupply.totalPrice ?? 0,
+					file: gasSupply.file ? [gasSupply.file] : [],
+					vehicleId: String(gasSupply.vehicleId ?? editingVehicle?.id ?? ""),
+					gasStationId: String(gasSupply.gasStationId),
+					gasId: String(gasSupply.gasId),
 				};
 			}
 
 			return {
-				registerDate: new Date(),
-				occurrenceDate: new Date(),
-				description: "",
+				supplyAt: new Date(),
+				kmToStop: 0,
+				kmToReview: 0,
+				quantity: 0,
+				totalPrice: 0,
 				file: [],
-				classificationId: "1",
-				seriousnessId: "2",
 				vehicleId: String(editingVehicle?.id ?? ""),
+				gasStationId: "1",
+				gasId: "1",
 			};
 		},
 		[editingVehicle],
@@ -101,75 +98,76 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 		control,
 		reset,
 		formState: { isDirty },
-	} = useForm<OccurrenceForm>({
-		resolver: zodResolver(OccurrenceFormSchema),
-		defaultValues: buildDefaultValues(editingOccurrence),
+	} = useForm<GasSupplyForm>({
+		resolver: zodResolver(GasSupplyFormSchema),
+		defaultValues: buildDefaultValues(editingGasSupply),
 	});
 
 	const { mutateAsync: mutateUploadDoc } = useMutation({
 		mutationFn: async (params: { id: number; formData: FormData }) =>
-			postData<OccurrenceData, FormData>({
-				url: `/occurrence/${params.id}/attachments`,
+			postData<GasSupplyData, FormData>({
+				url: `/gasSupply/${params.id}/receipt`,
 				data: params.formData,
 			}),
-		mutationKey: ["occurrence-upload-attachments"],
+		mutationKey: ["gas-supply-upload-receipt"],
 	});
 
 	const {
-		mutateAsync: mutatePostOccurrence,
-		isPending: isLoadingPostOccurrence,
+		mutateAsync: mutatePostGasSupply,
+		isPending: isLoadingPostGasSupply,
 	} = useMutation({
-		mutationFn: async (val: PostData<OccurrencePayload>) =>
-			postData<OccurrenceData, OccurrencePayload>(val),
-		mutationKey: ["occurrence-post"],
+		mutationFn: async (val: PostData<GasSupplyPayload>) =>
+			postData<GasSupplyData, GasSupplyPayload>(val),
+		mutationKey: ["gas-supply-post"],
 	});
 
-	const {
-		mutateAsync: mutatePutOccurrence,
-		isPending: isLoadingPutOccurrence,
-	} = useMutation({
-		mutationFn: (val: PutData<OccurrencePayload>) =>
-			putData<OccurrenceData, OccurrencePayload>(val),
-		mutationKey: ["occurrence-put"],
-	});
+	const { mutateAsync: mutatePutGasSupply, isPending: isLoadingPutGasSupply } =
+		useMutation({
+			mutationFn: (val: PutData<GasSupplyPayload>) =>
+				putData<GasSupplyData, GasSupplyPayload>(val),
+			mutationKey: ["gas-supply-put"],
+		});
 
-	const { seriousnessOptions, classificationOptions, isLoadingOptions } =
-		useOccurrenceFormOptions();
+	const { gasOptions, gasStationOptions, isLoadingOptions } =
+		useGasSupplyFormOptions();
 
 	const loading =
-		isLoadingPostOccurrence || isLoadingPutOccurrence || isLoadingOptions;
+		isLoadingPostGasSupply || isLoadingPutGasSupply || isLoadingOptions;
 
 	const onErrors = (err: any) => {
+		// console.log(JSON.stringify(err, null, 2));
 		toast.error("Por favor, corrija os erros no formulário.");
 	};
 
-	const onSubmit = async (data: OccurrenceForm) => {
+	const onSubmit = async (data: GasSupplyForm) => {
 		try {
-			if (!isDirty && editingOccurrence) {
-				setTabPanel("tab-occurrence");
+			if (!isDirty && editingGasSupply) {
+				setTabPanel("tab-gas-supply");
 				return;
 			}
 
-			let savedOccurrence: OccurrenceData;
+			console.log("data", data);
+			let savedGasSupply: GasSupplyData;
 
-			const parseData = OccurrencePayloadSchema.parse({
+			const parseData = GasSupplyPayloadSchema.parse({
 				...data,
-				registerDate: data.registerDate?.toISOString(),
-				occurrenceDate: data.occurrenceDate?.toISOString(),
+				supplyAt: data.supplyAt?.toISOString(),
 				vehicleId: editingVehicle?.id,
 				file: undefined,
 				// document: [],
 			});
 
-			if (!editingOccurrence) {
-				savedOccurrence = await mutatePostOccurrence({
-					url: "/occurrence",
+			console.log("parse", parseData);
+
+			if (!editingGasSupply) {
+				savedGasSupply = await mutatePostGasSupply({
+					url: "/gasSupply",
 					data: parseData,
 				});
 			} else {
-				savedOccurrence = await mutatePutOccurrence({
-					url: "/occurrence",
-					id: Number(editingOccurrence.id),
+				savedGasSupply = await mutatePutGasSupply({
+					url: "/gasSupply",
+					id: Number(editingGasSupply.id),
 					data: parseData,
 				});
 			}
@@ -177,7 +175,7 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 			const hasNewFiles =
 				data.file?.some(
 					(doc: FileValue) =>
-						doc?.fileName !== editingOccurrence?.file?.fileName,
+						doc?.fileName !== editingGasSupply?.file?.fileName,
 				) ?? false;
 
 			if (hasNewFiles) {
@@ -190,22 +188,22 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 				}
 
 				await mutateUploadDoc({
-					id: savedOccurrence.id,
+					id: savedGasSupply.id,
 					formData,
 				});
 			}
 
-			setEditingOccurrence(undefined);
+			setEditingGasSupply(undefined);
 
 			if (editingVehicle)
 				await queryClient.invalidateQueries({
-					queryKey: ["occurrence-get", editingVehicle?.id],
+					queryKey: ["gas-supply-get", editingVehicle?.id],
 				});
 			reset();
 			toast.success(
-				editingOccurrence
-					? "Ocorrência atualizada com sucesso"
-					: "Ocorrência cadastrada com sucesso",
+				editingGasSupply
+					? "Abastecimento atualizado com sucesso"
+					: "Abastecimento cadastrado com sucesso",
 			);
 			setOpen(false);
 		} catch (error: any) {
@@ -214,8 +212,8 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 	};
 
 	useEffect(() => {
-		reset(buildDefaultValues(editingOccurrence));
-	}, [editingOccurrence, reset, buildDefaultValues]);
+		reset(buildDefaultValues(editingGasSupply));
+	}, [editingGasSupply, reset, buildDefaultValues]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -228,9 +226,9 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 						<FileText />
 					</div>
 					<DialogHeader>
-						<DialogTitle>Adicionar ocorrência</DialogTitle>
+						<DialogTitle>Adicionar abastecimento</DialogTitle>
 						<DialogDescription>
-							Preencha os campos abaixo para cadastrar uma nova ocorrência.
+							Preencha os campos abaixo para cadastrar um novo abastecimento.
 						</DialogDescription>
 					</DialogHeader>
 				</div>
@@ -240,63 +238,140 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 					onSubmit={handleSubmit(onSubmit, onErrors)}
 					className="flex w-full flex-col gap-4 p-6 overflow-hidden flex-1 overflow-y-auto"
 				>
+					<Controller
+						name="gasStationId"
+						control={control}
+						render={({ field, fieldState }) =>
+							loading ? (
+								<Skeleton className="rounded-md w-full h-10" />
+							) : (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>
+										Posto de combustível
+									</FieldLabel>
+									<FormSelect
+										id={field.name}
+										value={field.value ?? ""}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										aria-invalid={fieldState.invalid}
+										options={gasStationOptions}
+										placeholder="Selecione um posto..."
+										className="w-full"
+										name={field.name}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)
+						}
+					/>
+					<FieldGroup className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+						<Controller
+							name="kmToReview"
+							control={control}
+							render={({ field, fieldState }) =>
+								loading ? (
+									<Skeleton className="rounded-md w-full h-8" />
+								) : (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor={field.name}>
+											Km para revisão
+										</FieldLabel>
+										<InputNumber
+											{...field}
+											aria-invalid={fieldState.invalid}
+											placeholder="30"
+											value={Number(field.value)}
+											min={0}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)
+							}
+						/>
+						<Controller
+							name="kmToStop"
+							control={control}
+							render={({ field, fieldState }) =>
+								loading ? (
+									<Skeleton className="rounded-md w-full h-8" />
+								) : (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor={field.name}>Km de parada</FieldLabel>
+										<InputNumber
+											{...field}
+											aria-invalid={fieldState.invalid}
+											placeholder="45"
+											value={Number(field.value)}
+											min={0}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)
+							}
+						/>
+						<Controller
+							name="gasId"
+							control={control}
+							render={({ field, fieldState }) =>
+								loading ? (
+									<Skeleton className="rounded-md w-full h-10" />
+								) : (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor={field.name}>Combustível</FieldLabel>
+										<FormSelect
+											id={field.name}
+											value={field.value ?? ""}
+											onChange={field.onChange}
+											onBlur={field.onBlur}
+											aria-invalid={fieldState.invalid}
+											options={gasOptions}
+											placeholder="Selecione um combustível..."
+											className="w-full"
+											name={field.name}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)
+							}
+						/>
+						<Controller
+							name="quantity"
+							control={control}
+							render={({ field, fieldState }) =>
+								loading ? (
+									<Skeleton className="rounded-md w-full h-8" />
+								) : (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor={field.name}>
+											Quantidade de litros
+										</FieldLabel>
+										<InputNumber
+											{...field}
+											aria-invalid={fieldState.invalid}
+											placeholder="10"
+											value={Number(field.value)}
+											min={0}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)
+							}
+						/>
+					</FieldGroup>
 					<FieldGroup className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 						<Controller
-							name="seriousnessId"
-							control={control}
-							render={({ field, fieldState }) =>
-								loading ? (
-									<Skeleton className="rounded-md w-full h-10" />
-								) : (
-									<Field data-invalid={fieldState.invalid}>
-										<FieldLabel htmlFor={field.name}>Seriedade</FieldLabel>
-										<FormSelect
-											id={field.name}
-											value={field.value ?? ""}
-											onChange={field.onChange}
-											onBlur={field.onBlur}
-											aria-invalid={fieldState.invalid}
-											options={seriousnessOptions}
-											placeholder="Selecione um combustível..."
-											className="w-full"
-											name={field.name}
-										/>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)
-							}
-						/>
-						<Controller
-							name="classificationId"
-							control={control}
-							render={({ field, fieldState }) =>
-								loading ? (
-									<Skeleton className="rounded-md w-full h-10" />
-								) : (
-									<Field data-invalid={fieldState.invalid}>
-										<FieldLabel htmlFor={field.name}>Classificação</FieldLabel>
-										<FormSelect
-											id={field.name}
-											value={field.value ?? ""}
-											onChange={field.onChange}
-											onBlur={field.onBlur}
-											aria-invalid={fieldState.invalid}
-											options={classificationOptions}
-											placeholder="Selecione um combustível..."
-											className="w-full"
-											name={field.name}
-										/>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)
-							}
-						/>
-						<Controller
-							name="occurrenceDate"
+							name="supplyAt"
 							control={control}
 							render={({ field, fieldState }) =>
 								loading ? (
@@ -304,36 +379,7 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 								) : (
 									<Field data-invalid={fieldState.invalid}>
 										<FieldLabel htmlFor={field.name}>
-											Data de Ocorrência
-										</FieldLabel>
-										<FormDatePicker
-											id={field.name}
-											value={field.value ?? ""}
-											onChange={field.onChange}
-											onBlur={field.onBlur}
-											aria-invalid={fieldState.invalid}
-											placeholder="14/05/2026"
-											className="w-full"
-											name={field.name}
-										/>
-
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)
-							}
-						/>
-						<Controller
-							name="registerDate"
-							control={control}
-							render={({ field, fieldState }) =>
-								loading ? (
-									<Skeleton className="rounded-md w-full h-10" />
-								) : (
-									<Field data-invalid={fieldState.invalid}>
-										<FieldLabel htmlFor={field.name}>
-											Registro da Ocorrência
+											Registro da Abastecimento
 										</FieldLabel>
 										<FormDatePicker
 											id={field.name}
@@ -353,31 +399,31 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 								)
 							}
 						/>
+						<Controller
+							name="totalPrice"
+							control={control}
+							render={({ field, fieldState }) =>
+								loading ? (
+									<Skeleton className="rounded-md w-full h-8" />
+								) : (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor={field.name}>Valor total</FieldLabel>
+										<InputNumber
+											{...field}
+											aria-invalid={fieldState.invalid}
+											placeholder="108"
+											value={Number(field.value)}
+											min={0}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)
+							}
+						/>
 					</FieldGroup>
-					<Controller
-						name="description"
-						control={control}
-						render={({ field, fieldState }) =>
-							loading ? (
-								<Skeleton className="rounded-md w-full h-8" />
-							) : (
-								<Field data-invalid={fieldState.invalid}>
-									<FieldLabel htmlFor={field.name}>Descrição</FieldLabel>
-									<Textarea
-										{...field}
-										placeholder="Houve uma tentativa de roubo"
-										rows={6}
-										className="min-h-24"
-										aria-invalid={fieldState.invalid}
-										value={field.value ?? ""} // parse para caso seja null
-									/>
-									{fieldState.invalid && (
-										<FieldError errors={[fieldState.error]} />
-									)}
-								</Field>
-							)
-						}
-					/>
+
 					<Controller
 						name="file"
 						control={control}
@@ -392,7 +438,7 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 									data-invalid={fieldState.invalid}
 									className="md:col-span-2"
 								>
-									<FieldLabel htmlFor={field.name}>Anexo</FieldLabel>
+									<FieldLabel htmlFor={field.name}>Comprovante</FieldLabel>
 
 									<InputFile
 										id={field.name}
@@ -412,7 +458,6 @@ export function ModalFormOccurrence({ open, setOpen }: ModalFormProps) {
 									/>
 
 									<FilePreviewList
-										// files={images}
 										files={images.filter((a) => a)}
 										onRemove={(id) => {
 											const current = Array.isArray(field.value)
