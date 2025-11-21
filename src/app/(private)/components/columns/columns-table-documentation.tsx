@@ -3,8 +3,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { ChevronsUpDown, Pencil, Trash } from "lucide-react";
-import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
+import type { DocumentationData } from "@/app/(private)/types/types-documentation";
 import { Button } from "@/components/ui/button";
+import type { FileType } from "@/types/models/File.schema";
 
 export interface DocumentationColumnActions {
 	onEdit: (document: DocumentationData) => void;
@@ -14,7 +15,7 @@ export const getDocumentationColumns = (
 	actions: DocumentationColumnActions,
 ): ColumnDef<DocumentationData>[] => [
 	{
-		accessorKey: "document",
+		accessorKey: "file",
 		header: ({ column }) => {
 			return (
 				<div className="flex items-center h-full">
@@ -30,7 +31,8 @@ export const getDocumentationColumns = (
 			);
 		},
 		enableColumnFilter: true,
-		cell: ({ cell }) => String(cell.getValue() ?? "-"),
+		cell: ({ cell }) =>
+			(cell.getValue() as FileType | undefined | null)?.mimeType,
 		size: 65,
 	},
 	{
@@ -61,7 +63,7 @@ export const getDocumentationColumns = (
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						className="text-secondary-foreground/80 rounded-sm -ms-3 px-2 h-8 hover:text-foreground"
 					>
-						Tipo
+						Dias
 						<ChevronsUpDown className="size-3" />
 					</Button>
 				</div>
@@ -71,7 +73,6 @@ export const getDocumentationColumns = (
 			(cell.getValue() as string[]).length >= 0
 				? (cell.getValue() as string[]).join(", ")
 				: "-",
-		enableColumnFilter: true,
 	},
 	{
 		accessorKey: "expiryAt",
@@ -114,8 +115,6 @@ export const getDocumentationColumns = (
 							variant="ghost"
 							size="icon"
 							onClick={() => {
-								// console.log(document);
-
 								actions.onEdit(document);
 							}}
 						>

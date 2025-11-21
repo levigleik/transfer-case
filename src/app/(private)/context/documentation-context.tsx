@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
+import type { DocumentationData } from "@/app/(private)/types/types-documentation";
 
 type DocumentationFormContextValue = {
 	editingDocumentation?: DocumentationData;

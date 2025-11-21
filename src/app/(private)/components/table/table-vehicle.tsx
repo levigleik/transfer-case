@@ -3,12 +3,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, CloudDownload, RotateCw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { ModalDeleteVehicle } from "@/app/(private)/components/modal-delete-vehicle";
-import { ModalTableVehicle } from "@/app/(private)/components/modal-table-vehicle";
-import TabsVehicle from "@/app/(private)/components/tabs-vehicle";
+import { ModalDeleteVehicle } from "@/app/(private)/components/modal/modal-delete-vehicle";
+import { ModalTableVehicle } from "@/app/(private)/components/modal/modal-table-vehicle";
+import TabsVehicle from "@/app/(private)/components/tabs/tabs-vehicle";
 import { useModalContext } from "@/app/(private)/context/modal-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
-import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
+import type { VehicleData } from "@/app/(private)/types/types-vehicle";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Card } from "@/components/ui/card";
@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import {
 	getVehicleColumns,
 	type VehicleColumnActions,
-} from "./columns-table-vehicle";
+} from "../columns/columns-table-vehicle";
 
 export default function TableVehicle() {
 	const { setEditingVehicle } = useVehicleFormContext();
@@ -32,7 +32,7 @@ export default function TableVehicle() {
 	const openEditModal = useCallback(
 		(vehicle: VehicleData) => {
 			setEditingVehicle(vehicle);
-			setTabPanel("general-data");
+			setTabPanel("tab-general-data");
 			setIsModalEditOpen(true);
 		},
 		[setEditingVehicle, setTabPanel, setIsModalEditOpen],

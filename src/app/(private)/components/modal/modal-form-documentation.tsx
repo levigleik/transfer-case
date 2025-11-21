@@ -15,12 +15,12 @@ import {
 	type DocumentationPayload,
 	documentationTypes,
 	type FileValue,
-} from "@/app/(private)/utils/types-documentation";
-import type { ImageValue } from "@/app/(private)/utils/types-vehicle";
+} from "@/app/(private)/types/types-documentation";
+import type { ImageValue } from "@/app/(private)/types/types-vehicle";
 import {
 	DocumentationFormSchema,
 	DocumentationPayloadSchema,
-} from "@/app/(private)/utils/validation-documentation";
+} from "@/app/(private)/validation/validation-documentation";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -70,7 +70,6 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 					days: documentation.days ?? [],
 					type: documentation.type ?? "",
 					anticipateRenewal: documentation.anticipateRenewal ?? false,
-					// Normaliza para sempre ser um array (ou [])
 					file: documentation.file ? [documentation.file] : [],
 					expiryAt: documentation.expiryAt
 						? new Date(documentation.expiryAt)
@@ -159,10 +158,9 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	const onSubmit = async (data: DocumentationForm) => {
 		try {
 			if (!isDirty && editingDocumentation) {
-				setTabPanel("documentation");
+				setTabPanel("tab-documentation");
 				return;
 			}
-			console.log("data", data);
 
 			let savedDocumentation: DocumentationData;
 
@@ -193,9 +191,6 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 						doc?.fileName !== editingDocumentation?.file?.fileName,
 				) ?? false;
 
-			console.log("editingDocumentation", editingDocumentation);
-			console.log("hasNewFiles", hasNewFiles);
-
 			if (hasNewFiles) {
 				const formData = new FormData();
 
@@ -204,7 +199,6 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 						formData.append("files", doc.file);
 					}
 				}
-				console.log("formData", formData.getAll("files"));
 
 				await mutateUploadDoc({
 					id: savedDocumentation.id,
@@ -237,7 +231,7 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogContent
-				className="p-0 rounded-xl overflow-hidden gap-0 focus-visible:outline-none sm:max-w-4xl
+				className="p-0 rounded-xl overflow-hidden gap-0 focus-visible:outline-none sm:max-w-5xl
         flex flex-col max-h-[90vh]"
 			>
 				<div className="flex items-center gap-3 p-6 flex-shrink-0">
@@ -255,9 +249,9 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 				<form
 					autoComplete="off"
 					onSubmit={handleSubmit(onSubmit, onErrors)}
-					className="flex w-full flex-col gap-4 p-6"
+					className="flex w-full flex-col gap-4 p-6 overflow-hidden flex-1 overflow-y-auto"
 				>
-					<FieldGroup className="grid grid-cols-1 lg:grid-cols-8 gap-4">
+					<FieldGroup className="grid grid-cols-1 lg:grid-cols-9 gap-4">
 						<Controller
 							name="days"
 							control={control}
@@ -328,9 +322,9 @@ export function ModalFormDocumentation({ open, setOpen }: ModalFormProps) {
 								) : (
 									<Field
 										data-invalid={fieldState.invalid}
-										className="col-span-2"
+										className="col-span-3"
 									>
-										<FieldLabel htmlFor={field.name}>Tipo</FieldLabel>
+										<FieldLabel htmlFor={field.name}>Vencimento</FieldLabel>
 										<FormDatePicker
 											id={field.name}
 											value={field.value ?? ""}

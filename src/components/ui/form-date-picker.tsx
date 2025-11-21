@@ -1,6 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
@@ -59,7 +60,11 @@ export const FormDatePicker = React.forwardRef<
 						{...props}
 					>
 						<CalendarIcon className="mr-2 h-4 w-4" />
-						{value ? format(value, "PPP") : <span>{placeholder}</span>}
+						{value ? (
+							format(value, "PPP", { locale: ptBR })
+						) : (
+							<span>{placeholder}</span>
+						)}
 					</Button>
 				</PopoverTrigger>
 

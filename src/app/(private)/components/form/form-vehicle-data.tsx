@@ -12,11 +12,11 @@ import type {
 	VehicleData,
 	VehicleForm,
 	VehiclePayload,
-} from "@/app/(private)/utils/types-vehicle";
+} from "@/app/(private)/types/types-vehicle";
 import {
 	VehicleFormSchema,
 	VehiclePayloadSchema,
-} from "@/app/(private)/utils/validation-vehicle";
+} from "@/app/(private)/validation/validation-vehicle";
 import { Button } from "@/components/ui/button";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
@@ -159,7 +159,7 @@ export function FormVehicleData() {
 			let savedVehicle: VehicleType;
 
 			if (!isDirty && editingVehicle) {
-				setTabPanel("documentation");
+				setTabPanel("tab-documentation");
 				return;
 			}
 
@@ -210,7 +210,7 @@ export function FormVehicleData() {
 					? "Veículo atualizado com sucesso"
 					: "Veículo cadastrado com sucesso",
 			);
-			setTabPanel("documentation");
+			setTabPanel("tab-documentation");
 			// const tabElement = document.getElementById("documentation");
 			// if (tabElement) {
 			// 	tabElement.scrollIntoView({ behavior: "smooth" });
@@ -665,9 +665,7 @@ export function FormVehicleData() {
 							<Skeleton className="rounded-md w-full h-8" />
 						) : (
 							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor="form-rhf-demo-description">
-									Descrição
-								</FieldLabel>
+								<FieldLabel htmlFor={field.name}>Descrição</FieldLabel>
 								<Textarea
 									{...field}
 									placeholder="316"

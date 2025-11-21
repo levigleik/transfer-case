@@ -1,4 +1,4 @@
-import TableVehicle from "@/app/(private)/components/table-vehicle";
+import TableVehicle from "@/app/(private)/components/table/table-vehicle";
 
 export default async function VehiclePage() {
 	return (

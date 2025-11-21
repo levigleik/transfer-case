@@ -20,11 +20,10 @@ import type {
  */
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const createOptionsMapper = <T extends Record<string, any>>(
+export const createOptionsMapper = <T extends Record<string, any>>(
 	valueKey: keyof T,
 	labelKey: keyof T,
 ) => {
-	// Retorna a função que o useQuery espera
 	return (data: T[]) =>
 		data.map((item) => ({
 			value: String(item[valueKey]),

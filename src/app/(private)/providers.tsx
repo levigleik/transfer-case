@@ -1,5 +1,6 @@
 import { DocumentationFormProvider } from "@/app/(private)/context/documentation-context";
 import { ModalProvider } from "@/app/(private)/context/modal-context";
+import { OccurrenceFormProvider } from "@/app/(private)/context/occurrence-context";
 import { VehicleFormProvider } from "@/app/(private)/context/vehicle-context";
 
 export default async function Providers({
@@ -10,7 +11,9 @@ export default async function Providers({
 	return (
 		<VehicleFormProvider>
 			<DocumentationFormProvider>
-				<ModalProvider>{children}</ModalProvider>
+				<OccurrenceFormProvider>
+					<ModalProvider>{children}</ModalProvider>
+				</OccurrenceFormProvider>
 			</DocumentationFormProvider>
 		</VehicleFormProvider>
 	);

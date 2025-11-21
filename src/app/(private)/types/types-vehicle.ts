@@ -1,10 +1,10 @@
 import type { z } from "zod";
-import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
+import type { DocumentationData } from "@/app/(private)/types/types-documentation";
 import type {
 	ImageValueSchema,
 	VehicleFormSchema,
 	VehiclePayloadSchema,
-} from "@/app/(private)/utils/validation-vehicle";
+} from "@/app/(private)/validation/validation-vehicle";
 import type {
 	BrandType,
 	CategoryType,

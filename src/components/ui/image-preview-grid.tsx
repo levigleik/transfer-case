@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
-import type { ImageValue } from "@/app/(private)/utils/types-vehicle";
+import type { ImageValue } from "@/app/(private)/types/types-vehicle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

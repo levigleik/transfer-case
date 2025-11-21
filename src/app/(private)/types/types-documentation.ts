@@ -3,7 +3,7 @@ import type {
 	DocumentationFormSchema,
 	DocumentationPayloadSchema,
 	FileValueSchema,
-} from "@/app/(private)/utils/validation-documentation";
+} from "@/app/(private)/validation/validation-documentation";
 import type { DocumentationType } from "@/types/models";
 import type { FileType } from "@/types/models/File.schema";
 

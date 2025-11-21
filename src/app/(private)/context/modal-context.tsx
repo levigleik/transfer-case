@@ -5,7 +5,7 @@ import * as React from "react";
 import { type ReactNode, useCallback } from "react";
 import { useDocumentationFormContext } from "@/app/(private)/context/documentation-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
-import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
+import type { VehicleData } from "@/app/(private)/types/types-vehicle";
 
 type ModalContextValue = {
 	isModalEditOpen: boolean;
@@ -41,7 +41,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 			if (!open) {
 				setEditingVehicle(undefined);
 				setEditingDocumentation(undefined);
-				setTabPanel("general-data");
+				setTabPanel("tab-general-data");
 				await queryClient.invalidateQueries({ queryKey: ["vehicle-get"] });
 			}
 		},

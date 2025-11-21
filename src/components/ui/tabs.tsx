@@ -260,16 +260,14 @@ function TabsContent({
 	className,
 	...props
 }: TabsContentProps) {
-	const { activeValue } = useTabs();
-	const isActive = activeValue === value;
 	return (
 		<motion.div
 			role="tabpanel"
 			data-slot="tabs-content"
 			className={cn("overflow-hidden", className)}
-			initial={{ filter: "blur(0px)" }}
-			animate={{ filter: isActive ? "blur(0px)" : "blur(4px)" }}
-			exit={{ filter: "blur(0px)" }}
+			// initial={{ filter: "blur(0px)" }}
+			// animate={{ filter: isActive ? "blur(0px)" : "blur(4px)" }}
+			// exit={{ filter: "blur(0px)" }}
 			transition={{ type: "spring", stiffness: 200, damping: 25 }}
 			{...props}
 		>

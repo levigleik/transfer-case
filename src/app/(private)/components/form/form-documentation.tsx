@@ -4,16 +4,15 @@ import { useCallback, useMemo, useState } from "react";
 import {
 	type DocumentationColumnActions,
 	getDocumentationColumns,
-} from "@/app/(private)/components/columns-table-documentation";
-import { ModalDeleteDocumentation } from "@/app/(private)/components/modal-delete-documentation";
-import { ModalFormDocumentation } from "@/app/(private)/components/modal-form-documentation";
+} from "@/app/(private)/components/columns/columns-table-documentation";
+import { ModalDeleteDocumentation } from "@/app/(private)/components/modal/modal-delete-documentation";
+import { ModalFormDocumentation } from "@/app/(private)/components/modal/modal-form-documentation";
 import { useDocumentationFormContext } from "@/app/(private)/context/documentation-context";
 import { useModalContext } from "@/app/(private)/context/modal-context";
 import { useVehicleFormContext } from "@/app/(private)/context/vehicle-context";
-import type { DocumentationData } from "@/app/(private)/utils/types-documentation";
+import type { DocumentationData } from "@/app/(private)/types/types-documentation";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { DialogFooter } from "@/components/ui/dialog";
 import { getData } from "@/lib/functions.api";
 
 export function FormDocumentation() {
@@ -26,7 +25,7 @@ export function FormDocumentation() {
 	const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
 
 	const onSubmit = () => {
-		setTabPanel("gas-supply");
+		setTabPanel("tab-gas-supply");
 	};
 
 	const vehicleId = editingVehicle?.id;
@@ -41,16 +40,6 @@ export function FormDocumentation() {
 			}),
 		enabled: !!vehicleId,
 	});
-
-	const _setIsModalFormOpen = useCallback(
-		(open: boolean) => {
-			setIsModalFormOpen(open);
-			if (!open) {
-				setEditingDocumentation(undefined);
-			}
-		},
-		[setEditingDocumentation],
-	);
 
 	const openEditModal = useCallback(
 		(documentation: DocumentationData) => {
@@ -89,7 +78,6 @@ export function FormDocumentation() {
 				<Button
 					type="button"
 					onClick={() => {
-						// limpa o editing antes de abrir para garantir que o modal abra em modo "create"
 						setEditingDocumentation(undefined);
 						setIsModalFormOpen(true);
 					}}

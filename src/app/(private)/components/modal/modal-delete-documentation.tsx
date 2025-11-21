@@ -24,7 +24,7 @@ type ModalFormProps = {
 export function ModalDeleteDocumentation({ open, setOpen }: ModalFormProps) {
 	const { editingDocumentation, setEditingDocumentation } =
 		useDocumentationFormContext();
-	const { editingVehicle, setEditingVehicle } = useVehicleFormContext();
+	const { editingVehicle } = useVehicleFormContext();
 	const queryClient = useQueryClient();
 
 	const {

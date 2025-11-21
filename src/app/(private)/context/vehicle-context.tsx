@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import type { VehicleData } from "@/app/(private)/utils/types-vehicle";
+import type { VehicleData } from "@/app/(private)/types/types-vehicle";
 
 type VehicleFormContextValue = {
 	editingVehicle?: VehicleData;
