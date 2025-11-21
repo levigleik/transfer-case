@@ -146,7 +146,6 @@ export function ModalFormGasSupply({ open, setOpen }: ModalFormProps) {
 				return;
 			}
 
-			console.log("data", data);
 			let savedGasSupply: GasSupplyData;
 
 			const parseData = GasSupplyPayloadSchema.parse({
@@ -156,8 +155,6 @@ export function ModalFormGasSupply({ open, setOpen }: ModalFormProps) {
 				file: undefined,
 				// document: [],
 			});
-
-			console.log("parse", parseData);
 
 			if (!editingGasSupply) {
 				savedGasSupply = await mutatePostGasSupply({
