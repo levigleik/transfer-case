@@ -72,7 +72,7 @@ Siga os passos abaixo para executar o projeto em seu ambiente local.
 
 1.  **Clone o repositório:**
     ```bash
-    git clone <URL_DO_REPOSITORIO>
+    git clone https://github.com/levigleik/transfer-case
     cd transfer
     ```
 
