@@ -1,5 +1,7 @@
+import { LanguageToggle } from "@/components/navbar/language-toggle";
+import { PassApps } from "@/components/navbar/pass-apps";
 import { SearchCommand } from "@/components/navbar/search-command";
-import { ThemeToggle } from "@/components/sidebar/theme-toggle";
+import { ThemeToggle } from "@/components/navbar/theme-toggle";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -31,6 +33,8 @@ export function AppNavbar() {
 			</div>
 			<div className="flex items-center gap-2 sm:gap-2.5">
 				<ThemeToggle />
+				<LanguageToggle />
+				<PassApps />
 			</div>
 		</div>
 	);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Search, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,10 @@ export function ThemeToggle() {
 					<span className="sr-only">Alternar tema</span>
 				</Button>
 			</TooltipTrigger>
-			<TooltipContent>Alternar tema</TooltipContent>
+			<TooltipContent hasArrow className="font-normal text-sm">
+				{" "}
+				Alternar tema
+			</TooltipContent>
 		</Tooltip>
 	);
 }
