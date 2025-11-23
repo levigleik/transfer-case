@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
 			},
 		];
 	},
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "wildcat-primary-ultimately.ngrok-free.app",
+			},
+		],
+	},
 };
 
 export default nextConfig;

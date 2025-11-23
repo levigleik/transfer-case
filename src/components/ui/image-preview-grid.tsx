@@ -40,15 +40,52 @@ function ImagePreviewItem({ image, onRemove }: ImagePreviewItemProps) {
 	const [objectUrl, setObjectUrl] = React.useState<string | null>(null);
 
 	React.useEffect(() => {
-		if (image.file) {
-			const url = URL.createObjectURL(image.file);
-			setObjectUrl(url);
-			return () => {
-				URL.revokeObjectURL(url);
-			};
-		} else if (image.url) {
-			setObjectUrl(image.url);
-		}
+		let active = true; // Flag para evitar atualização de estado se o componente desmontar
+		let generatedUrl: string | null = null;
+
+		const loadImage = async () => {
+			if (image.file) {
+				generatedUrl = URL.createObjectURL(image.file);
+				if (active) setObjectUrl(generatedUrl);
+				return;
+			}
+			if (image.url) {
+				try {
+					const isNgrok = image.url.includes("ngrok");
+
+					if (isNgrok) {
+						const response = await fetch(image.url, {
+							headers: {
+								"ngrok-skip-browser-warning": "1",
+							},
+						});
+
+						if (!response.ok) throw new Error("Falha ao carregar imagem");
+
+						const blob = await response.blob();
+						generatedUrl = URL.createObjectURL(blob);
+
+						if (active) setObjectUrl(generatedUrl);
+					} else {
+						// Se não for ngrok, usa a URL direta
+						if (active) setObjectUrl(image.url);
+					}
+				} catch (error) {
+					console.error("Erro ao carregar imagem via ngrok:", error);
+					// Fallback: tenta mostrar a URL original mesmo que falhe (pode mostrar o aviso do ngrok)
+					if (active) setObjectUrl(image.url);
+				}
+			}
+		};
+
+		loadImage();
+
+		return () => {
+			active = false;
+			if (generatedUrl) {
+				URL.revokeObjectURL(generatedUrl);
+			}
+		};
 	}, [image.file, image.url]);
 
 	if (!objectUrl) return null;
